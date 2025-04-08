@@ -1,4 +1,4 @@
-import "./checkboxselector.css";
+import "./checkboxSelector.css";
 
 const CheckboxSelector = ({ filterItem, checkboxes, setCheckboxes, nameKey }) => {
   // Get the actual value to display
