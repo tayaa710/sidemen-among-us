@@ -24,6 +24,55 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
   const hoverTimeoutRef = useRef(null);
   const touchTimeoutRef = useRef(null);
   
+  // Add scroll event listener to close tooltip on scroll for mobile
+  useEffect(() => {
+    const handleScroll = () => {
+      if (touchActivated || isHovered) {
+        setTouchActivated(false);
+        setIsHovered(false);
+        if (touchTimeoutRef.current) {
+          clearTimeout(touchTimeoutRef.current);
+        }
+      }
+    };
+    
+    // Add touch event to body to allow tapping outside to close
+    const handleBodyTouch = (e) => {
+      if (isHovered && 
+          containerRef.current && 
+          !containerRef.current.contains(e.target) &&
+          tooltipRef.current &&
+          !tooltipRef.current.contains(e.target)) {
+        setTouchActivated(false);
+        setIsHovered(false);
+        if (touchTimeoutRef.current) {
+          clearTimeout(touchTimeoutRef.current);
+        }
+      }
+    };
+    
+    // Handle touch move events (for scrolling)
+    const handleTouchMove = () => {
+      if (touchActivated || isHovered) {
+        setTouchActivated(false);
+        setIsHovered(false);
+        if (touchTimeoutRef.current) {
+          clearTimeout(touchTimeoutRef.current);
+        }
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    document.body.addEventListener('touchstart', handleBodyTouch, { passive: true });
+    document.body.addEventListener('touchmove', handleTouchMove, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.body.removeEventListener('touchstart', handleBodyTouch);
+      document.body.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [touchActivated, isHovered]);
+  
   // Calculate positions when hovering starts - debounced
   useEffect(() => {
     if (!isHovered || !containerRef.current) return;
@@ -145,6 +194,15 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
     }
   };
   
+  const handleCloseTooltip = (e) => {
+    e.stopPropagation();
+    setIsHovered(false);
+    setTouchActivated(false);
+    if (touchTimeoutRef.current) {
+      clearTimeout(touchTimeoutRef.current);
+    }
+  };
+  
   return (
     <div 
       ref={containerRef}
@@ -215,56 +273,70 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
       </div>
 
       {isHovered && (
-        <div 
-          ref={tooltipRef}
-          className={`video-tooltip tooltip-${tooltipPosition} tooltip-${verticalPosition}`}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <div className="tooltip-connector"></div>
-          <div className="tooltip-content">
-            <h4>{title}</h4>
-            
-            <div className="tooltip-stats">
-              <div><strong>Views:</strong> {formatNumber(viewCount)}</div>
-              <div><strong>Likes:</strong> {formatNumber(likeCount)}</div>
-              <div><strong>Duration:</strong> {duration}</div>
-            </div>
-            
-            {youtubeUrl && (
-              <a 
-                href={youtubeUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="tooltip-youtube-link"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/>
-                </svg>
-                Watch on YouTube
-              </a>
-            )}
-            
-            <div className="tooltip-section">
-              <h5>Players</h5>
-              <div className="tooltip-tags">
-                {players.map((player, index) => (
-                  <span key={index} className="tooltip-tag player-tag">{player}</span>
-                ))}
+        <>
+          {/* Modal background overlay (mobile only) */}
+          <div className="tooltip-modal-overlay" onClick={handleCloseTooltip}></div>
+          
+          <div 
+            ref={tooltipRef}
+            className={`video-tooltip tooltip-${tooltipPosition} tooltip-${verticalPosition}`}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <button 
+              className="tooltip-close-btn" 
+              onClick={handleCloseTooltip}
+              aria-label="Close"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+              </svg>
+            </button>
+            <div className="tooltip-connector"></div>
+            <div className="tooltip-content">
+              <h4>{title}</h4>
+              
+              <div className="tooltip-stats">
+                <div><strong>Views:</strong> {formatNumber(viewCount)}</div>
+                <div><strong>Likes:</strong> {formatNumber(likeCount)}</div>
+                <div><strong>Duration:</strong> {duration}</div>
               </div>
-            </div>
-            
-            <div className="tooltip-section">
-              <h5>Roles</h5>
-              <div className="tooltip-tags">
-                {roles.map((role, index) => (
-                  <span key={index} className="tooltip-tag role-tag">{role}</span>
-                ))}
+              
+              {youtubeUrl && (
+                <a 
+                  href={youtubeUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="tooltip-youtube-link"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/>
+                  </svg>
+                  Watch on YouTube
+                </a>
+              )}
+              
+              <div className="tooltip-section">
+                <h5>Players</h5>
+                <div className="tooltip-tags">
+                  {players.map((player, index) => (
+                    <span key={index} className="tooltip-tag player-tag">{player}</span>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="tooltip-section">
+                <h5>Roles</h5>
+                <div className="tooltip-tags">
+                  {roles.map((role, index) => (
+                    <span key={index} className="tooltip-tag role-tag">{role}</span>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
