@@ -19,13 +19,10 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
   const [tooltipPosition, setTooltipPosition] = useState("right");
   const [verticalPosition, setVerticalPosition] = useState("top");
   const [touchActivated, setTouchActivated] = useState(false);
-  const [isScrolling, setIsScrolling] = useState(false);
   const containerRef = useRef(null);
   const tooltipRef = useRef(null);
   const hoverTimeoutRef = useRef(null);
   const touchTimeoutRef = useRef(null);
-  const touchStartYRef = useRef(0);
-  const touchStartXRef = useRef(0);
   
   // Add scroll event listener to close tooltip on scroll for mobile
   useEffect(() => {
@@ -37,14 +34,6 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
           clearTimeout(touchTimeoutRef.current);
         }
       }
-      // Set scrolling state to prevent immediate touch activation
-      setIsScrolling(true);
-      
-      // Reset scrolling state after scroll stops
-      clearTimeout(window.scrollTimer);
-      window.scrollTimer = setTimeout(() => {
-        setIsScrolling(false);
-      }, 100);
     };
     
     // Add touch event to body to allow tapping outside to close
@@ -64,8 +53,6 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
     
     // Handle touch move events (for scrolling)
     const handleTouchMove = () => {
-      setIsScrolling(true);
-      
       if (touchActivated || isHovered) {
         setTouchActivated(false);
         setIsHovered(false);
@@ -79,22 +66,10 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
     document.body.addEventListener('touchstart', handleBodyTouch, { passive: true });
     document.body.addEventListener('touchmove', handleTouchMove, { passive: true });
     
-    // Reset scrolling state when touch events end
-    const handleTouchEnd = () => {
-      // Short delay to allow checking if scrolling occurred
-      setTimeout(() => {
-        setIsScrolling(false);
-      }, 50);
-    };
-    
-    document.body.addEventListener('touchend', handleTouchEnd, { passive: true });
-    
     return () => {
       window.removeEventListener('scroll', handleScroll);
       document.body.removeEventListener('touchstart', handleBodyTouch);
       document.body.removeEventListener('touchmove', handleTouchMove);
-      document.body.removeEventListener('touchend', handleTouchEnd);
-      clearTimeout(window.scrollTimer);
     };
   }, [touchActivated, isHovered]);
   
@@ -170,58 +145,17 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
   };
   
   const handleTouchStart = (e) => {
-    // Store initial touch coordinates for movement detection
-    touchStartYRef.current = e.touches[0].clientY;
-    touchStartXRef.current = e.touches[0].clientX;
-    
-    // Don't activate if already scrolling
-    if (isScrolling) {
-      return;
-    }
-    
     // Prevent default only for the first touch to prevent scrolling issues
     if (!touchActivated) {
-      // Don't prevent default as it interferes with scrolling
-      // e.preventDefault();
+      e.preventDefault();
+      setIsHovered(true);
+      setTouchActivated(true);
       
-      // Delay activation slightly to detect if this is a scroll attempt
-      // Using a longer delay (200ms) to better detect scrolling intent
+      // Auto-reset touch state after 5 seconds of inactivity
       touchTimeoutRef.current = setTimeout(() => {
-        if (!isScrolling) {
-          setIsHovered(true);
-          setTouchActivated(true);
-          
-          // Auto-reset touch state after 5 seconds of inactivity
-          touchTimeoutRef.current = setTimeout(() => {
-            setTouchActivated(false);
-            setIsHovered(false);
-          }, 5000);
-        }
-      }, 200); // Increased from 50ms to 200ms for better scroll detection
-    }
-  };
-  
-  const handleTouchMove = (e) => {
-    // Calculate distance moved
-    const touchY = e.touches[0].clientY;
-    const touchX = e.touches[0].clientX;
-    const deltaY = Math.abs(touchY - touchStartYRef.current);
-    const deltaX = Math.abs(touchX - touchStartXRef.current);
-    
-    // If user moved finger more than threshold, consider it scrolling
-    if (deltaY > 10 || deltaX > 10) {
-      setIsScrolling(true);
-      
-      // Cancel any pending tooltip activation
-      if (touchTimeoutRef.current) {
-        clearTimeout(touchTimeoutRef.current);
-      }
-      
-      // Close tooltip if already open
-      if (touchActivated || isHovered) {
         setTouchActivated(false);
         setIsHovered(false);
-      }
+      }, 5000);
     }
   };
   
@@ -237,11 +171,6 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
   const handleVideoClick = (e) => {
     // Prevent opening the URL if the user is interacting with the tooltip
     if (e.target.closest('.video-tooltip')) {
-      return;
-    }
-    
-    // Don't trigger click actions while scrolling
-    if (isScrolling) {
       return;
     }
     
@@ -281,7 +210,6 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
     >
       <div 
         className="video-card"

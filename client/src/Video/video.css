@@ -793,38 +793,31 @@
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     border-color: var(--sidemen-red);
     transform: translateZ(0) scale(1.03);
-    /* Ensure transitions are smooth */
-    transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
 }
 
 .video-card-container.touch-activated .video-thumbnail {
     transform: scale(1.05);
 }
 
-/* Add animation delay to make hover effects appear more intentional on touch */
 .video-card-container.touch-activated .video-overlay {
     opacity: 1;
-    transition-delay: 0.1s;
 }
 
 .video-card-container.touch-activated .video-play-icon {
     transform: scale(1) translateY(0);
     opacity: 1;
     animation: pulse-play 2s infinite ease-in-out;
-    transition-delay: 0.15s;
 }
 
 .video-card-container.touch-activated .video-youtube-link {
     opacity: 1;
     transform: translateY(0);
-    transition-delay: 0.2s;
 }
 
 .video-card-container.touch-activated .video-clickable-indicator {
     opacity: 1;
     transform: translateY(0);
     animation: float 2s ease-in-out infinite;
-    transition-delay: 0.2s;
 }
 
 /* Mobile helper text for second tap */
