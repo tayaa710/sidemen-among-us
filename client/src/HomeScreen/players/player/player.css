@@ -1,0 +1,313 @@
+/* Player Card Container */
+.player-card-container {
+  position: relative;
+  width: 240px;
+  margin: 12px;
+  flex: 0 0 auto;
+}
+
+/* Player Card */
+.player-card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--dark-bg-tertiary, #1c1c1c);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+  border: 1px solid #333;
+  height: 100%;
+  padding: 18px;
+}
+
+.player-card-container:hover .player-card {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border-color: #ff0000;
+  transform: translateZ(0) scale(1.03);
+}
+
+/* Player Header */
+.player-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #333;
+}
+
+.player-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+  color: #fff;
+}
+
+.player-win-indicator {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.player-win-indicator.positive {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.player-win-indicator.negative {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+/* Stats Display */
+.player-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.stat-group {
+  display: flex;
+  justify-content: space-between;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.stat-item {
+  text-align: center;
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #aaa;
+  margin-top: 4px;
+}
+
+/* Role Stats */
+.role-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 4px;
+}
+
+.role-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.role-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.role-icon {
+  font-size: 1.2rem;
+}
+
+.role-win {
+  font-size: 0.9rem;
+}
+
+.role-stat.imposter {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.role-stat.crewmate {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+}
+
+/* Player Tooltip Styles */
+.player-tooltip {
+  position: absolute;
+  width: 320px;
+  background-color: #1c1c1c;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  border: 1px solid #333;
+  z-index: 10;
+  opacity: 0;
+  animation: tooltipFadeIn 0.3s forwards;
+  max-height: 80vh;
+  overflow-y: auto;
+  transition: transform 0.2s ease-out;
+}
+
+/* Right side positioning (default) */
+.player-tooltip.tooltip-right {
+  left: calc(100% + 15px);
+}
+
+/* Left side positioning */
+.player-tooltip.tooltip-left {
+  right: calc(100% + 15px);
+  left: auto;
+}
+
+/* Top alignment (default) */
+.player-tooltip.tooltip-top {
+  top: 0;
+}
+
+/* Center alignment (new) */
+.player-tooltip.tooltip-center {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Bottom alignment */
+.player-tooltip.tooltip-bottom {
+  bottom: 0;
+  top: auto;
+}
+
+/* Add a hover bridge to prevent tooltip disappearing */
+.player-tooltip.tooltip-right::before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 100%;
+  background-color: transparent;
+  top: 0;
+  left: -20px;
+}
+
+/* Add a hover bridge for left positioned tooltips */
+.player-tooltip.tooltip-left::before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 100%;
+  background-color: transparent;
+  top: 0;
+  right: -20px;
+  left: auto;
+}
+
+@keyframes tooltipFadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+.tooltip-content {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tooltip-content h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+}
+
+.tooltip-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tooltip-section h5 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #ddd;
+}
+
+.tooltip-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.tooltip-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.tooltip-stat:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.tooltip-stat-label {
+  font-size: 0.8rem;
+  color: #aaa;
+}
+
+.tooltip-stat-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* Responsive Tooltip */
+@media (max-width: 1200px) {
+  .player-tooltip {
+    width: 280px;
+  }
+}
+
+/* Mobile responsive tooltip positioning */
+@media (max-width: 768px) {
+  .player-tooltip {
+    position: fixed;
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: translate(-50%, -50%) !important;
+    max-width: 90vw;
+    max-height: 80vh;
+    z-index: 1000;
+  }
+  
+  .player-tooltip.tooltip-right::before,
+  .player-tooltip.tooltip-left::before {
+    display: none;
+  }
+}
+
+/* Scrollbar styling for the tooltip */
+.player-tooltip::-webkit-scrollbar {
+  width: 4px;
+}
+
+.player-tooltip::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.player-tooltip::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.player-tooltip::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}

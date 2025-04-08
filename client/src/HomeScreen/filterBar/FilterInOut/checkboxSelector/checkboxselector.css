@@ -1,0 +1,75 @@
+.playerCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background-color: var(--dark-bg-accent);
+  border: 1px solid var(--border-dark);
+  transition: all var(--transition-standard);
+  color: var(--text-secondary);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.playerCheckbox:hover {
+  background-color: rgba(255, 0, 0, 0.1);
+  border-color: var(--sidemen-red);
+  color: var(--text-primary);
+  transform: translateX(3px);
+}
+
+.playerCheckbox:active {
+  transform: scale(0.98);
+}
+
+.checkboxIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  font-size: 14px;
+  position: relative;
+}
+
+/* Checkbox states styling */
+.checkboxIcon:has(.blank) {
+  position: relative;
+}
+
+.blank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-darker);
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background-color: var(--dark-bg-tertiary);
+  transition: all var(--transition-standard);
+}
+
+.playerCheckbox:hover .blank {
+  border-color: var(--sidemen-red);
+  box-shadow: 0 0 0 1px rgba(255, 0, 0, 0.3);
+}
+
+label {
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  user-select: none;
+  transition: color var(--transition-standard);
+  text-transform: capitalize;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playerCheckbox:hover label {
+  color: var(--text-primary);
+}

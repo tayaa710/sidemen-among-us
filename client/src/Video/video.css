@@ -1,0 +1,767 @@
+/* Base Video Components */
+.video-card-container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+}
+
+.video-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--dark-bg-tertiary);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+    height: 100%;
+    border: 1px solid var(--border-dark);
+}
+
+.video-card-container:hover .video-card {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    border-color: var(--sidemen-red);
+    transform: translateZ(0) scale(1.03);
+}
+
+/* Thumbnail Section */
+.video-thumbnail-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    aspect-ratio: 16/9;
+}
+
+.video-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.video-card-container:hover .video-thumbnail {
+    transform: scale(1.05);
+}
+
+.video-duration {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    z-index: 2;
+}
+
+.video-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.4) 40%, rgba(0, 0, 0, 0.2) 70%, transparent 100%);
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease;
+}
+
+.video-card-container:hover .video-overlay {
+    opacity: 1;
+}
+
+.video-play-icon {
+    width: 54px;
+    height: 54px;
+    background-color: var(--sidemen-red);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0.8) translateY(10px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 20px rgba(255, 0, 0, 0.3);
+}
+
+.video-card-container:hover .video-play-icon {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+.video-play-icon svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+/* Content Section */
+.video-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 8px;
+}
+
+.video-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Stats Section */
+.video-stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.video-views, .video-likes {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.8;
+}
+
+/* Tooltip */
+.video-tooltip {
+    position: absolute;
+    width: 280px;
+    background-color: var(--dark-bg-tertiary);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-dark);
+    z-index: 10;
+    opacity: 0;
+    pointer-events: auto;
+    animation: tooltipFadeIn 0.3s forwards;
+    max-height: 60vh;
+    overflow-y: auto;
+    transition: transform 0.2s ease-out;
+}
+
+/* Horizontal positioning */
+.tooltip-right {
+    left: calc(100% + 10px);
+}
+
+.tooltip-left {
+    right: calc(100% + 10px);
+    left: auto;
+}
+
+/* Vertical positioning */
+.tooltip-top {
+    top: 0;
+}
+
+/* Center alignment (new) */
+.tooltip-center {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.tooltip-bottom {
+    bottom: 0;
+    top: auto;
+}
+
+/* Animation keyframes based on position */
+@keyframes tooltipFadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+/* For very tall tooltips, ensure they don't go off screen vertically */
+@media (max-height: 700px) {
+    .video-tooltip {
+        max-height: 70vh;
+    }
+}
+
+/* For small screens, center the tooltip */
+@media (max-width: 768px) {
+    .video-tooltip {
+        position: fixed;
+        top: 50% !important;
+        left: 50% !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: translate(-50%, -50%) !important;
+        max-width: 90vw;
+        max-height: 80vh;
+        z-index: 1000;
+    }
+    
+    .video-tooltip.tooltip-top, 
+    .video-tooltip.tooltip-bottom,
+    .video-tooltip.tooltip-left, 
+    .video-tooltip.tooltip-right,
+    .video-tooltip.tooltip-center {
+        animation: tooltipFadeInMobile 0.3s forwards;
+    }
+    
+    @keyframes tooltipFadeInMobile {
+        to {
+            opacity: 1;
+        }
+    }
+    
+    .tooltip-right::before,
+    .tooltip-left::before {
+        display: none;
+    }
+}
+
+/* Remove the previous positioning selector */
+.video-card-container:has(.video-tooltip):last-child .video-tooltip,
+.video-card-container:has(.video-tooltip):nth-last-child(2) .video-tooltip,
+.video-card-container:has(.video-tooltip):nth-last-child(3) .video-tooltip {
+    display: none; /* Remove this rule as we now handle positioning dynamically */
+}
+
+.tooltip-content {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.tooltip-content h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-dark);
+    padding-bottom: 10px;
+}
+
+.tooltip-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    background-color: rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.tooltip-stats div {
+    font-size: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.tooltip-stats strong {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.tooltip-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tooltip-section h5 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+.tooltip-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+.tooltip-tag {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    border-radius: 12px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.player-tag {
+    background-color: rgba(242, 38, 19, 0.15);
+    color: var(--text-secondary);
+    border-left: 2px solid var(--sidemen-red);
+}
+
+.role-tag {
+    background-color: rgba(255, 193, 7, 0.15);
+    color: var(--text-secondary);
+    border-right: 2px solid var(--accent-gold);
+}
+
+.player-tag:hover, .role-tag:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}
+
+/* Media Queries */
+@media (max-width: 1024px) {
+    .video-tooltip {
+        display: none;
+    }
+}
+
+/* For mobile, show details in a different way */
+@media (max-width: 768px) {
+    .video-card-container {
+        width: 100%;
+    }
+}
+
+/* Legacy styles for backward compatibility */
+.videoContainer {
+    background-color: var(--dark-bg-tertiary);
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0;
+    border-radius: 12px;
+    border: 1px solid var(--border-dark);
+    box-shadow: var(--shadow-soft);
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    margin: 0;
+    width: 100%;
+    cursor: pointer;
+}
+
+.videoContainer:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-strong);
+    border-color: var(--sidemen-red);
+}
+
+.videoContainer:active {
+    transform: translateY(-1px) scale(0.98);
+}
+
+.thumbnailContainer {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+}
+
+.thumbnail {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    margin-bottom: 0;
+    transition: transform 0.3s ease;
+}
+
+.videoContainer:hover .thumbnail {
+    transform: scale(1.02);
+}
+
+.duration {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: var(--text-primary);
+    padding: 4px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: 2;
+}
+
+.videoContent {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+}
+
+.videoTitle {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 15px 15px 10px;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.videoInfo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px 15px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.counters {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0 15px 15px;
+    padding: 0 15px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    background-color: var(--dark-bg-secondary);
+    border-radius: 20px;
+    padding: 8px 15px;
+}
+
+.counters div {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.counters div::before {
+    font-size: 1rem;
+}
+
+.counters div:first-child::before {
+    content: '👁️';
+}
+
+.counters div:last-child::before {
+    content: '❤️';
+}
+
+.videoMeta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 15px 15px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Fix for tags container */
+.tagsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0 15px 15px;
+}
+
+/* Players section */
+.players {
+    margin: 0;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.25s ease;
+    display: flex;
+    margin-bottom: 12px;
+}
+
+/* Roles section */
+.roles {
+    margin: 0;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.25s ease;
+    display: flex;
+}
+
+.videoContainer:hover .players {
+    max-height: 120px;
+    opacity: 1;
+    margin-bottom: 12px;
+}
+
+.videoContainer:hover .roles {
+    max-height: 120px;
+    opacity: 1;
+}
+
+.playerName, .role {
+    background-color: var(--dark-bg-accent);
+    color: var(--text-secondary);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    border: 1px solid var(--border-dark);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    margin: 2px;
+}
+
+.playerName:hover, .role:hover {
+    background-color: var(--accent-red);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+.playerName {
+    border-left: 3px solid var(--sidemen-red);
+}
+
+.role {
+    border-right: 3px solid var(--accent-gold);
+}
+@media (max-width: 1200px) {
+    .videoContainer {
+        width: 100%;
+    }
+}
+
+/* Make tooltip easier to reach by adding a transparent bridge */
+.tooltip-right::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 100%;
+    width: 15px;
+    height: 100%;
+    background-color: transparent;
+}
+
+.tooltip-left::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: 15px;
+    height: 100%;
+    background-color: transparent;
+}
+
+/* Scrollbar for tag sections */
+.tooltip-tags::-webkit-scrollbar {
+    width: 4px;
+}
+
+.tooltip-tags::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.tooltip-tags::-webkit-scrollbar-thumb {
+    background-color: var(--border-dark);
+    border-radius: 10px;
+}
+
+.tooltip-tags::-webkit-scrollbar-thumb:hover {
+    background-color: var(--sidemen-red);
+}
+
+/* YouTube Link Styling */
+.video-youtube-link {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 70%, transparent 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 0;
+    transform: translateY(100%);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 3;
+}
+
+.video-youtube-link::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.video-card-container:hover .video-youtube-link::before {
+    opacity: 1;
+}
+
+.video-youtube-link svg {
+    width: 22px;
+    height: 22px;
+    color: #ff0000;
+    filter: drop-shadow(0 0 3px rgba(255, 0, 0, 0.5));
+}
+
+.video-card-container:hover .video-youtube-link {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Pulse animation for play button on hover */
+@keyframes pulse-play {
+    0% { transform: scale(1); box-shadow: 0 4px 20px rgba(255, 0, 0, 0.3); }
+    50% { transform: scale(1.05); box-shadow: 0 4px 25px rgba(255, 0, 0, 0.5); }
+    100% { transform: scale(1); box-shadow: 0 4px 20px rgba(255, 0, 0, 0.3); }
+}
+
+.video-card-container:hover .video-play-icon {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    animation: pulse-play 2s infinite ease-in-out;
+}
+
+.tooltip-youtube-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: #ff0000;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 4px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 8px rgba(255, 0, 0, 0.3);
+}
+
+.tooltip-youtube-link:hover {
+    background-color: #cc0000;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(255, 0, 0, 0.4);
+}
+
+.tooltip-youtube-link svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Video Card Interaction */
+.video-card {
+    transform-origin: center;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                box-shadow 0.3s ease, 
+                border-color 0.3s ease;
+}
+
+.video-card:active {
+    transform: scale(0.98);
+}
+
+.youtube-link-legacy {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 70%, transparent 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 0;
+    transform: translateY(100%);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.youtube-link-legacy svg {
+    width: 22px;
+    height: 22px;
+    color: #ff0000;
+}
+
+.videoContainer:hover .youtube-link-legacy {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Clickable Indicator */
+.video-clickable-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    gap: 6px;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 3;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.video-clickable-indicator svg {
+    width: 16px;
+    height: 16px;
+}
+
+.video-card-container:hover .video-clickable-indicator {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-3px); }
+    100% { transform: translateY(0px); }
+}
+
+.video-card-container:hover .video-clickable-indicator {
+    animation: float 2s ease-in-out infinite;
+}
+
+/* Enhanced cursor styling */
+.video-card[style*="cursor: pointer"]:hover {
+    cursor: pointer;
+}
+
