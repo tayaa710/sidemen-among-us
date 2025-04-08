@@ -325,8 +325,13 @@
 
 /* Media Queries */
 @media (max-width: 1024px) {
+    /* Show tooltip only when touch-activated, otherwise hide */
     .video-tooltip {
         display: none;
+    }
+    
+    .video-card-container.touch-activated .video-tooltip {
+        display: block;
     }
 }
 
@@ -334,6 +339,19 @@
 @media (max-width: 768px) {
     .video-card-container {
         width: 100%;
+    }
+    
+    /* Center tooltip better on small screens */
+    .video-card-container.touch-activated .video-tooltip {
+        position: fixed;
+        top: 50% !important;
+        left: 50% !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: translate(-50%, -50%) !important;
+        max-width: 90vw;
+        max-height: 80vh;
+        z-index: 1000;
     }
 }
 
@@ -763,5 +781,51 @@
 /* Enhanced cursor styling */
 .video-card[style*="cursor: pointer"]:hover {
     cursor: pointer;
+}
+
+/* For touch devices */
+.video-card-container.touch-activated .video-card {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    border-color: var(--sidemen-red);
+    transform: translateZ(0) scale(1.03);
+}
+
+.video-card-container.touch-activated .video-thumbnail {
+    transform: scale(1.05);
+}
+
+.video-card-container.touch-activated .video-overlay {
+    opacity: 1;
+}
+
+.video-card-container.touch-activated .video-play-icon {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    animation: pulse-play 2s infinite ease-in-out;
+}
+
+.video-card-container.touch-activated .video-youtube-link {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.video-card-container.touch-activated .video-clickable-indicator {
+    opacity: 1;
+    transform: translateY(0);
+    animation: float 2s ease-in-out infinite;
+}
+
+/* Mobile helper text for second tap */
+.video-card-container.touch-activated .video-clickable-indicator::after {
+    content: 'Tap again to watch';
+    margin-left: 4px;
+}
+
+/* Media query to adjust helper text on small screens */
+@media (max-width: 480px) {
+    .video-card-container.touch-activated .video-clickable-indicator {
+        font-size: 0.7rem;
+        padding: 4px 8px;
+    }
 }
 

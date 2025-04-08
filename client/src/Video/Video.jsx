@@ -18,9 +18,11 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
   const [isHovered, setIsHovered] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState("right");
   const [verticalPosition, setVerticalPosition] = useState("top");
+  const [touchActivated, setTouchActivated] = useState(false);
   const containerRef = useRef(null);
   const tooltipRef = useRef(null);
   const hoverTimeoutRef = useRef(null);
+  const touchTimeoutRef = useRef(null);
   
   // Calculate positions when hovering starts - debounced
   useEffect(() => {
@@ -93,24 +95,63 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
     }, 150); // Increased delay for better experience
   };
   
+  const handleTouchStart = (e) => {
+    // Prevent default only for the first touch to prevent scrolling issues
+    if (!touchActivated) {
+      e.preventDefault();
+      setIsHovered(true);
+      setTouchActivated(true);
+      
+      // Auto-reset touch state after 5 seconds of inactivity
+      touchTimeoutRef.current = setTimeout(() => {
+        setTouchActivated(false);
+        setIsHovered(false);
+      }, 5000);
+    }
+  };
+  
+  // Clean up touch timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (touchTimeoutRef.current) {
+        clearTimeout(touchTimeoutRef.current);
+      }
+    };
+  }, []);
+  
   const handleVideoClick = (e) => {
     // Prevent opening the URL if the user is interacting with the tooltip
     if (e.target.closest('.video-tooltip')) {
       return;
     }
     
-    // Open YouTube URL in a new tab
-    if (youtubeUrl) {
-      window.open(youtubeUrl, '_blank', 'noopener,noreferrer');
+    // For touch devices, only open the URL on second tap
+    if (touchActivated) {
+      // This is the second tap, so open the link
+      if (youtubeUrl) {
+        window.open(youtubeUrl, '_blank', 'noopener,noreferrer');
+      }
+      // Reset the touch state
+      setTouchActivated(false);
+      setIsHovered(false);
+      if (touchTimeoutRef.current) {
+        clearTimeout(touchTimeoutRef.current);
+      }
+    } else if (!('ontouchstart' in window)) {
+      // For non-touch devices, open immediately
+      if (youtubeUrl) {
+        window.open(youtubeUrl, '_blank', 'noopener,noreferrer');
+      }
     }
   };
   
   return (
     <div 
       ref={containerRef}
-      className="video-card-container"
+      className={`video-card-container ${touchActivated ? 'touch-activated' : ''}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onTouchStart={handleTouchStart}
     >
       <div 
         className="video-card"
