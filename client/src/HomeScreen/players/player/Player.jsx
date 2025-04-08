@@ -25,7 +25,7 @@ const Player = ({ stats }) => {
   const imposterWinPercentage = stats.imposterwin || Math.round(100 * stats.imposterwins / stats.impostergames) || "NA";
   const crewmateWinPercentage = stats.crewmatewin || Math.round(100 * stats.crewmatewins / stats.crewmategames) || "NA";
   
-  // Calculate tooltip position when it becomes visible
+  // Calculate tooltip position when it becomes visible 
   useEffect(() => {
     if (!isHovered || !containerRef.current) return;
     
