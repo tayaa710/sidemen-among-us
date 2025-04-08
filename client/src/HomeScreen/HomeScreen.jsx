@@ -2,8 +2,12 @@ import React, { useEffect, useState, useCallback, useMemo, useRef } from "react"
 import Video from "../Video/Video";
 import axios from "axios";
 import "./homeScreen.css";
+import Plausible from 'plausible-tracker';
 import FilterBar from "./filterBar/FilterBar";
 import Players from "./players/Players";
+
+// Initialize Plausible tracker for custom events
+const plausible = Plausible();
 
 // Amount of videos to load at once
 const VIDEOS_PER_PAGE = 21;
@@ -65,6 +69,14 @@ const HomeScreen = () => {
           
           console.error("Received empty or invalid data", { videos, stats });
           
+          // Track API error event
+          plausible.trackEvent('API Error', { 
+            props: { 
+              error: 'Empty or invalid data',
+              retryCount 
+            }
+          });
+          
           // Retry up to 3 times with a delay
           if (retryCount < 3) {
             console.log(`Retrying data fetch (${retryCount + 1}/3) in 2 seconds...`);
@@ -104,8 +116,25 @@ const HomeScreen = () => {
         setMapCheckboxes(mapOptions);
         
         setLoading(false);
+        
+        // Track successful data fetch
+        plausible.trackEvent('Data Loaded', { 
+          props: { 
+            videoCount: videos.length,
+            playerCount: playerData.length,
+            gameCount: gameData.length
+          }
+        });
       } catch (error) {
         console.error("Error fetching data:", error);
+        
+        // Track error event
+        plausible.trackEvent('API Error', { 
+          props: { 
+            error: error.message,
+            retryCount 
+          }
+        });
         
         // Retry up to 3 times with a delay
         if (retryCount < 3) {
@@ -127,6 +156,16 @@ const HomeScreen = () => {
       entries => {
         if (entries[0].isIntersecting && hasMore && !loadingMore) {
           setLoadingMore(true);
+          
+          // Track infinite scroll event
+          plausible.trackEvent('Load More Videos', { 
+            props: { 
+              fromCount: videosToShow,
+              toCount: videosToShow + VIDEOS_PER_PAGE,
+              totalAvailable: videoData.length
+            }
+          });
+          
           setTimeout(() => {
             setVideosToShow(prev => prev + VIDEOS_PER_PAGE);
             setLoadingMore(false);
@@ -146,7 +185,32 @@ const HomeScreen = () => {
         observer.unobserve(observerTarget.current);
       }
     };
-  }, [hasMore, loadingMore]);
+  }, [hasMore, loadingMore, videoData.length, videosToShow]);
+  
+  // Track when sorter changes
+  useEffect(() => {
+    if (sorter && originalVideoData.length > 0) {
+      plausible.trackEvent('Sort Changed', { 
+        props: { sortOption: sorter }
+      });
+    }
+  }, [sorter, originalVideoData.length]);
+  
+  // Track when search query changes (debounced)
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (searchQuery && originalVideoData.length > 0) {
+        plausible.trackEvent('Search Query', { 
+          props: { 
+            query: searchQuery,
+            resultCount: filteredAndSortedVideos.length
+          }
+        });
+      }
+    }, 500);
+    
+    return () => clearTimeout(handler);
+  }, [searchQuery, originalVideoData.length, filteredAndSortedVideos.length]);
 
   // Memoized filter helper function
   const filterByHelper = useCallback((checkbox, filterList, nameKey) => {
@@ -250,12 +314,27 @@ const HomeScreen = () => {
   // Toggle filter visibility
   const toggleFilters = () => {
     setFiltersCollapsed(!filtersCollapsed);
+    
+    // Track filter toggle event
+    plausible.trackEvent('Toggle Filters', { 
+      props: { state: !filtersCollapsed ? 'collapsed' : 'expanded' }
+    });
   };
 
   // Get slice of videos to display
   const videosToDisplay = useMemo(() => {
     return videoData.slice(0, videosToShow);
   }, [videoData, videosToShow]);
+  
+  // Handler for video click tracking
+  const handleVideoClick = (videoId, videoTitle) => {
+    plausible.trackEvent('Video Click', { 
+      props: { 
+        videoId,
+        videoTitle
+      }
+    });
+  };
 
   return (
     <div className="homeContainer">
@@ -306,6 +385,7 @@ const HomeScreen = () => {
                     players={video.players}
                     roles={video.roles}
                     youtubeUrl={video.videoUrl}
+                    onVideoClick={() => handleVideoClick(video.id, video.title)}
                   />
                 ))}
                 

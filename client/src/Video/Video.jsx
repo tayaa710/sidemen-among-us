@@ -14,7 +14,7 @@ const formatDuration = (duration) => {
   return duration;
 };
 
-const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players, roles, youtubeUrl }) => {
+const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players, roles, youtubeUrl, onVideoClick }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState("right");
   const [verticalPosition, setVerticalPosition] = useState("top");
@@ -99,9 +99,24 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
       return;
     }
     
+    // Track click event with Plausible if callback exists
+    if (onVideoClick) {
+      onVideoClick();
+    }
+    
     // Open YouTube URL in a new tab
     if (youtubeUrl) {
       window.open(youtubeUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+  
+  // Handle YouTube link click in tooltip
+  const handleYouTubeLinkClick = (e) => {
+    e.stopPropagation();
+    
+    // Track click event with Plausible if callback exists
+    if (onVideoClick) {
+      onVideoClick();
     }
   };
   
@@ -196,7 +211,7 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="tooltip-youtube-link"
-                onClick={(e) => e.stopPropagation()}
+                onClick={handleYouTubeLinkClick}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/>
