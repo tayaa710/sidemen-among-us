@@ -1,4 +1,4 @@
-import "./filterbar.css";
+import "./filterBar.css";
 import FilterInOut from "./FilterInOut/FilterInOut";
 import { useState } from "react";
 
