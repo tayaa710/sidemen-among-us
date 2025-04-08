@@ -1,5 +1,5 @@
 import CheckboxSelector from "./checkboxSelector/CheckboxSelector";
-import "./filterinout.css";
+import "./filterInOut.css";
 import { useState } from "react";
 
 const FilterInOut = ({ checkboxes, setCheckboxes, nameKey, title }) => {
