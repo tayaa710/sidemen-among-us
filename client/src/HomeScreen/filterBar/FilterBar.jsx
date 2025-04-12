@@ -13,6 +13,8 @@ const FilterBar = ({
   setRoleCheckboxes,
   mapCheckboxes,
   setMapCheckboxes,
+  modeCheckboxes,
+  setModeCheckboxes,
   filtersCollapsed,
   toggleFilters
 }) => {
@@ -76,6 +78,16 @@ const FilterBar = ({
               />
             </div>
 
+          {/* USER CAN FILTER VIDEOS BASED ON GAME MODE - COLLAPSIBLE SECTION */}
+          <div className="modeFilter">
+              <FilterInOut
+                checkboxes={modeCheckboxes}
+                setCheckboxes={setModeCheckboxes}
+                nameKey={"modename"}
+                title="Filter by Game Mode"
+              />
+            </div>
+
             {/* USER CAN FILTER VIDEOS BASED ON ROLE - COLLAPSIBLE SECTION */}
             <div className="roleFilter">
               <FilterInOut
@@ -95,6 +107,7 @@ const FilterBar = ({
                 title="Filter by Map"
               />
             </div>
+            
           </div>
         )}
         
@@ -106,12 +119,24 @@ const FilterBar = ({
                 <div className="filter-category">
                   <span className="category-name">Players:</span>
                   <div className="filter-pills">
-                    {playerCheckboxes.filter(item => item.filterValue === 1).map(item => (
-                      <span key={item.name} className="included-pill">{item.name}</span>
-                    ))}
-                    {playerCheckboxes.filter(item => item.filterValue === 2).map(item => (
-                      <span key={item.name} className="excluded-pill">not: {item.name}</span>
-                    ))}
+                    {playerCheckboxes
+                      .filter(item => item.filterValue === 1)
+                      .sort((a, b) => b.count - a.count)
+                      .map(item => (
+                        <span key={item.name} className="included-pill">
+                          {item.name}
+                          <small className="pill-count">({item.count})</small>
+                        </span>
+                      ))}
+                    {playerCheckboxes
+                      .filter(item => item.filterValue === 2)
+                      .sort((a, b) => b.count - a.count)
+                      .map(item => (
+                        <span key={item.name} className="excluded-pill">
+                          not: {item.name}
+                          <small className="pill-count">({item.count})</small>
+                        </span>
+                      ))}
                   </div>
                 </div>
               )}
@@ -120,12 +145,24 @@ const FilterBar = ({
                 <div className="filter-category">
                   <span className="category-name">Roles:</span>
                   <div className="filter-pills">
-                    {roleCheckboxes.filter(item => item.filterValue === 1).map(item => (
-                      <span key={item.rolename} className="included-pill">{item.rolename}</span>
-                    ))}
-                    {roleCheckboxes.filter(item => item.filterValue === 2).map(item => (
-                      <span key={item.rolename} className="excluded-pill">not: {item.rolename}</span>
-                    ))}
+                    {roleCheckboxes
+                      .filter(item => item.filterValue === 1)
+                      .sort((a, b) => b.count - a.count)
+                      .map(item => (
+                        <span key={item.rolename} className="included-pill">
+                          {item.rolename}
+                          <small className="pill-count">({item.count})</small>
+                        </span>
+                      ))}
+                    {roleCheckboxes
+                      .filter(item => item.filterValue === 2)
+                      .sort((a, b) => b.count - a.count)
+                      .map(item => (
+                        <span key={item.rolename} className="excluded-pill">
+                          not: {item.rolename}
+                          <small className="pill-count">({item.count})</small>
+                        </span>
+                      ))}
                   </div>
                 </div>
               )}
@@ -134,19 +171,56 @@ const FilterBar = ({
                 <div className="filter-category">
                   <span className="category-name">Maps:</span>
                   <div className="filter-pills">
-                    {mapCheckboxes.filter(item => item.filterValue === 1).map(item => (
-                      <span key={item.mapname} className="included-pill">{item.mapname}</span>
-                    ))}
-                    {mapCheckboxes.filter(item => item.filterValue === 2).map(item => (
-                      <span key={item.mapname} className="excluded-pill">not: {item.mapname}</span>
-                    ))}
+                    {mapCheckboxes
+                      .filter(item => item.filterValue === 1)
+                      .sort((a, b) => b.count - a.count)
+                      .map(item => (
+                        <span key={item.mapname} className="included-pill">
+                          {item.mapname}
+                          <small className="pill-count">({item.count})</small>
+                        </span>
+                      ))}
+                    {mapCheckboxes
+                      .filter(item => item.filterValue === 2)
+                      .sort((a, b) => b.count - a.count)
+                      .map(item => (
+                        <span key={item.mapname} className="excluded-pill">
+                          not: {item.mapname}
+                          <small className="pill-count">({item.count})</small>
+                        </span>
+                      ))}
+                  </div>
+                </div>
+              )}
+              
+              {modeCheckboxes.some(item => item.filterValue > 0) && (
+                <div className="filter-category">
+                  <span className="category-name">Game Modes:</span>
+                  <div className="filter-pills">
+                    {modeCheckboxes
+                      .filter(item => item.filterValue === 1)
+                      .map(item => (
+                        <span key={item.modename} className="included-pill">
+                          {item.modename}
+                          <small className="pill-count">({item.count})</small>
+                        </span>
+                      ))}
+                    {modeCheckboxes
+                      .filter(item => item.filterValue === 2)
+                      .map(item => (
+                        <span key={item.modename} className="excluded-pill">
+                          not: {item.modename}
+                          <small className="pill-count">({item.count})</small>
+                        </span>
+                      ))}
                   </div>
                 </div>
               )}
               
               {!playerCheckboxes.some(item => item.filterValue > 0) &&
                !roleCheckboxes.some(item => item.filterValue > 0) &&
-               !mapCheckboxes.some(item => item.filterValue > 0) && (
+               !mapCheckboxes.some(item => item.filterValue > 0) &&
+               !modeCheckboxes.some(item => item.filterValue > 0) && (
                 <span className="no-filters">No filters applied</span>
               )}
             </div>

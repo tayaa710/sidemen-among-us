@@ -29,6 +29,8 @@ const HomeScreen = () => {
   const [roleCheckboxes, setRoleCheckboxes] = useState([]);
   // loading: Loading state for initial data fetch
   const [mapCheckboxes, setMapCheckboxes] = useState([]);
+  // modeCheckboxes: Array for game mode filters (chaos, jester, etc)
+  const [modeCheckboxes, setModeCheckboxes] = useState([]);
   // Number of videos to show (for infinite scrolling)
   const [videosToShow, setVideosToShow] = useState(VIDEOS_PER_PAGE);
   // Loading more state
@@ -41,6 +43,17 @@ const HomeScreen = () => {
   // Reference for the observer
   const observerTarget = useRef(null);
   const hasMore = videosToShow < videoData.length;
+
+  // Define game modes with their patterns for title searching
+  const gameModes = [
+    { name: "Chaos", patterns: ["chaos"] },
+    { name: "Jester", patterns: ["jester"] },
+    { name: "Draft", patterns: ["draft"] },
+    { name: "Hide & Seek", patterns: ["hide & seek", "hide and seek", "hide n seek"] },
+    { name: "3D", patterns: ["3d among us", "3d mode"] },
+    { name: "Dumbest", patterns: ["dumb"] },
+    { name: "Proximity", patterns: ["proximity"] }
+  ];
 
   //USE EFFECT FUNCTIONS
 
@@ -84,24 +97,70 @@ const HomeScreen = () => {
         setGameStats(gameData);
         
         // Create player checkboxes
-        const playerOptions = [...new Set(videos.flatMap(v => v.players || []))].map(name => ({
-          name: name,
-          filterValue: 0
-        }));
+        const playerOptions = [...new Set(videos.flatMap(v => v.players || []))]
+          .map(name => {
+            // Count how many videos this player appears in
+            const count = videos.filter(v => v.players && v.players.includes(name)).length;
+            return {
+              name: name,
+              count: count,
+              filterValue: 0
+            };
+          })
+          .sort((a, b) => b.count - a.count); // Sort by count (most to least)
+        
         setPlayerCheckboxes(playerOptions);
         
         // Create role checkboxes
-        const roleOptions = [...new Set(videos.flatMap(v => v.roles || []))].map(role => ({
-          rolename: role,
-          filterValue: 0
-        }));
+        const roleOptions = [...new Set(videos.flatMap(v => v.roles || []))]
+          .map(role => {
+            // Count how many videos this role appears in
+            const count = videos.filter(v => v.roles && v.roles.includes(role)).length;
+            return {
+              rolename: role,
+              count: count,
+              filterValue: 0
+            };
+          })
+          .sort((a, b) => b.count - a.count); // Sort by count (most to least)
+        
         setRoleCheckboxes(roleOptions);
         
-        const mapOptions = [...new Set(videos.flatMap(v => v.mapNames || []))].map(mapname => ({
-          mapname: mapname,
-          filterValue: 0
-        }));
+        // Create map checkboxes
+        const mapOptions = [...new Set(videos.flatMap(v => v.mapNames || []))]
+          .map(mapname => {
+            // Count how many videos this map appears in
+            const count = videos.filter(v => v.mapNames && v.mapNames.includes(mapname)).length;
+            return {
+              mapname: mapname,
+              count: count,
+              filterValue: 0
+            };
+          })
+          .sort((a, b) => b.count - a.count); // Sort by count (most to least)
+        
         setMapCheckboxes(mapOptions);
+        
+        // Count occurrences of each mode in titles
+        const modeCounts = {};
+        gameModes.forEach(mode => {
+          modeCounts[mode.name] = videos.filter(v => {
+            const lowercaseTitle = v.title.toLowerCase();
+            return mode.patterns.some(pattern => lowercaseTitle.includes(pattern));
+          }).length;
+        });
+        
+        // Create mode checkboxes sorted by the number of videos (most first)
+        const modeOptions = Object.entries(modeCounts)
+          .filter(([_, count]) => count > 0) // Only include modes that appear in videos
+          .sort((a, b) => b[1] - a[1]) // Sort by count (descending)
+          .map(([modename, count]) => ({
+            modename,
+            count,
+            filterValue: 0
+          }));
+        
+        setModeCheckboxes(modeOptions);
         
         setLoading(false);
       } catch (error) {
@@ -148,32 +207,6 @@ const HomeScreen = () => {
     };
   }, [hasMore, loadingMore]);
 
-  // Memoized filter helper function
-  const filterByHelper = useCallback((checkbox, filterList, nameKey) => {
-    // Check if there are any active filters (filterValue 1 or 2)
-    const hasActiveFilters = checkbox.some(item => item.filterValue > 0);
-    
-    // If no filters are active, return true to show all videos
-    if (!hasActiveFilters) return true;
-    
-    const filterIn = checkbox
-      .filter((item) => item.filterValue === 1)
-      .map((item) => item[nameKey]);
-    const filterOut = checkbox
-      .filter((item) => item.filterValue === 2)
-      .map((item) => item[nameKey]);
-      
-    const passesOutFilter = !filterList.some((item) =>
-      filterOut.includes(item)
-    );
-    
-    const passesInFilter =
-      filterIn.length === 0 ||
-      filterList.some((item) => filterIn.includes(item));
-      
-    return passesOutFilter && passesInFilter;
-  }, []);
-
   // Memoized sorter function
   const sorterHelper = useCallback((videos, sortOption) => {
     const sortedVideos = [...videos]; // Create new array to avoid mutation
@@ -203,16 +236,6 @@ const HomeScreen = () => {
     return sortedVideos;
   }, []);
 
-  // Memoized search function
-  const filterBySearchHelper = useCallback((videos, query) => {
-    if (!query) return videos;
-    
-    const lowerCaseQuery = query.toLowerCase();
-    return videos.filter((video) =>
-      video.title.toLowerCase().includes(lowerCaseQuery)
-    );
-  }, []);
-
   // Memoized filtered videos
   const filteredAndSortedVideos = useMemo(() => {
     if (!originalVideoData.length) return [];
@@ -220,25 +243,119 @@ const HomeScreen = () => {
     let result = [...originalVideoData];
     
     // Apply search filter
-    result = filterBySearchHelper(result, searchQuery);
+    if (searchQuery) {
+      const lowerCaseQuery = searchQuery.toLowerCase();
+      result = result.filter(video => 
+        video.title.toLowerCase().includes(lowerCaseQuery)
+      );
+    }
     
     // Apply player filter
-    result = result.filter(video => 
-      filterByHelper(playerCheckboxes, video.players, "name"));
+    const activePlayerIncludes = playerCheckboxes
+      .filter(item => item.filterValue === 1)
+      .map(item => item.name);
+      
+    const activePlayerExcludes = playerCheckboxes
+      .filter(item => item.filterValue === 2)
+      .map(item => item.name);
+    
+    if (activePlayerIncludes.length > 0 || activePlayerExcludes.length > 0) {
+      result = result.filter(video => {
+        // Video must have ALL of the included players (if any are specified)
+        const hasAllIncludedPlayers = 
+          activePlayerIncludes.length === 0 || 
+          activePlayerIncludes.every(player => video.players && video.players.includes(player));
+        
+        // Video must not have any of the excluded players
+        const hasNoExcludedPlayer = 
+          !activePlayerExcludes.some(player => video.players && video.players.includes(player));
+        
+        return hasAllIncludedPlayers && hasNoExcludedPlayer;
+      });
+    }
     
     // Apply role filter
-    result = result.filter(video => 
-      filterByHelper(roleCheckboxes, video.roles, "rolename"));
+    const activeRoleIncludes = roleCheckboxes
+      .filter(item => item.filterValue === 1)
+      .map(item => item.rolename);
+      
+    const activeRoleExcludes = roleCheckboxes
+      .filter(item => item.filterValue === 2)
+      .map(item => item.rolename);
+    
+    if (activeRoleIncludes.length > 0 || activeRoleExcludes.length > 0) {
+      result = result.filter(video => {
+        // Video must have ALL of the included roles (if any are specified)
+        const hasAllIncludedRoles = 
+          activeRoleIncludes.length === 0 || 
+          activeRoleIncludes.every(role => video.roles && video.roles.includes(role));
+        
+        // Video must not have any of the excluded roles
+        const hasNoExcludedRole = 
+          !activeRoleExcludes.some(role => video.roles && video.roles.includes(role));
+        
+        return hasAllIncludedRoles && hasNoExcludedRole;
+      });
+    }
     
     // Apply map filter
-    result = result.filter(video => 
-      filterByHelper(mapCheckboxes, video.mapNames, "mapname"));
+    const activeMapIncludes = mapCheckboxes
+      .filter(item => item.filterValue === 1)
+      .map(item => item.mapname);
+      
+    const activeMapExcludes = mapCheckboxes
+      .filter(item => item.filterValue === 2)
+      .map(item => item.mapname);
+    
+    if (activeMapIncludes.length > 0 || activeMapExcludes.length > 0) {
+      result = result.filter(video => {
+        // Video must have ALL of the included maps (if any are specified)
+        const hasAllIncludedMaps = 
+          activeMapIncludes.length === 0 || 
+          activeMapIncludes.every(map => video.mapNames && video.mapNames.includes(map));
+        
+        // Video must not have any of the excluded maps
+        const hasNoExcludedMap = 
+          !activeMapExcludes.some(map => video.mapNames && video.mapNames.includes(map));
+        
+        return hasAllIncludedMaps && hasNoExcludedMap;
+      });
+    }
+    
+    // Apply mode filter
+    const activeModeIncludes = modeCheckboxes
+      .filter(item => item.filterValue === 1)
+      .map(item => item.modename);
+      
+    const activeModeExcludes = modeCheckboxes
+      .filter(item => item.filterValue === 2)
+      .map(item => item.modename);
+    
+    if (activeModeIncludes.length > 0 || activeModeExcludes.length > 0) {
+      result = result.filter(video => {
+        const lowercaseTitle = video.title.toLowerCase();
+        
+        // Find all matching game modes in this video
+        const matchingModes = gameModes
+          .filter(mode => mode.patterns.some(pattern => lowercaseTitle.includes(pattern)))
+          .map(mode => mode.name);
+        
+        // Video must have ALL of the included modes (if any are specified)
+        const hasAllIncludedModes = 
+          activeModeIncludes.length === 0 || 
+          activeModeIncludes.every(mode => matchingModes.includes(mode));
+        
+        // Video must not have any of the excluded modes
+        const hasNoExcludedMode = 
+          !activeModeExcludes.some(mode => matchingModes.includes(mode));
+        
+        return hasAllIncludedModes && hasNoExcludedMode;
+      });
+    }
     
     // Sort the results
-    result = sorterHelper(result, sorter);
-    
-    return result;
-  }, [originalVideoData, searchQuery, playerCheckboxes, roleCheckboxes, mapCheckboxes, sorter, filterByHelper, filterBySearchHelper, sorterHelper]);
+    return sorterHelper(result, sorter);
+  }, [originalVideoData, searchQuery, playerCheckboxes, roleCheckboxes, mapCheckboxes, modeCheckboxes, sorter, sorterHelper, gameModes]);
 
   // Update videoData when filteredAndSortedVideos changes
   useEffect(() => {
@@ -277,6 +394,8 @@ const HomeScreen = () => {
               setRoleCheckboxes={setRoleCheckboxes}
               mapCheckboxes={mapCheckboxes}
               setMapCheckboxes={setMapCheckboxes}
+              modeCheckboxes={modeCheckboxes}
+              setModeCheckboxes={setModeCheckboxes}
               filtersCollapsed={filtersCollapsed}
               toggleFilters={toggleFilters}
             />
@@ -306,6 +425,7 @@ const HomeScreen = () => {
                     players={video.players}
                     roles={video.roles}
                     youtubeUrl={video.videoUrl}
+                    isLastRow={videoData.indexOf(video) >= videoData.length - (videoData.length % 3 || 3)}
                   />
                 ))}
                 

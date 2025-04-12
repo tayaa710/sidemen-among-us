@@ -3,6 +3,7 @@ import "./checkboxSelector.css";
 const CheckboxSelector = ({ filterItem, checkboxes, setCheckboxes, nameKey }) => {
   // Get the actual value to display
   const displayValue = filterItem[nameKey];
+  const count = filterItem.count || 0;
 
   const handleCheckboxClick = (name) => {
     console.log(`Clicked ${nameKey} checkbox:`, name);
@@ -38,7 +39,10 @@ const CheckboxSelector = ({ filterItem, checkboxes, setCheckboxes, nameKey }) =>
           return renderCheckboxIcon(filterValue);
         })()}
       </span>
-      <label htmlFor={`filter-${displayValue}`}>{displayValue}</label>
+      <div className="checkbox-content">
+        <label htmlFor={`filter-${displayValue}`}>{displayValue}</label>
+        <span className="item-count">{count}</span>
+      </div>
     </div>
   );
 };

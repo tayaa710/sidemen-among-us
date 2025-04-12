@@ -14,7 +14,7 @@ const formatDuration = (duration) => {
   return duration;
 };
 
-const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players, roles, youtubeUrl }) => {
+const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players, roles, youtubeUrl, isLastRow }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState("right");
   const [verticalPosition, setVerticalPosition] = useState("top");
@@ -92,7 +92,9 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
       }
       
       // Vertical positioning with better edge detection
-      if (rect.bottom + tooltipHeight / 2 > windowHeight) {
+      // Check if we're in the bottom portion of the screen
+      // Force the tooltip to go upward if it's in the last row
+      if (isLastRow || rect.bottom + tooltipHeight / 2 > windowHeight) {
         // If we're in the bottom portion of the screen
         if (rect.top - tooltipHeight < 0) {
           // Not enough space above either, center it vertically
@@ -112,11 +114,24 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
       if (tooltipRef.current) {
         const tooltipRect = tooltipRef.current.getBoundingClientRect();
         const windowHeight = window.innerHeight;
+        const windowWidth = window.innerWidth;
         
         // Fix if tooltip still goes below viewport
         if (tooltipRect.bottom > windowHeight) {
           const adjustment = tooltipRect.bottom - windowHeight + 20;
           tooltipRef.current.style.transform = `translateY(-${adjustment}px)`;
+        }
+        
+        // Fix if tooltip goes off the right side
+        if (tooltipRect.right > windowWidth) {
+          const adjustment = tooltipRect.right - windowWidth + 20;
+          tooltipRef.current.style.transform = `${tooltipRef.current.style.transform || ''} translateX(-${adjustment}px)`;
+        }
+        
+        // Fix if tooltip goes off the left side
+        if (tooltipRect.left < 0) {
+          const adjustment = Math.abs(tooltipRect.left) + 20;
+          tooltipRef.current.style.transform = `${tooltipRef.current.style.transform || ''} translateX(${adjustment}px)`;
         }
       }
     }, 50);
@@ -130,7 +145,7 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
         tooltipRef.current.style.transform = '';
       }
     };
-  }, [isHovered]);
+  }, [isHovered, isLastRow]);
   
   // Improved hover handlers with longer delay to prevent flickering
   const handleMouseEnter = () => {
@@ -282,6 +297,10 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
             className={`video-tooltip tooltip-${tooltipPosition} tooltip-${verticalPosition}`}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            style={{ 
+              // Ensure tooltip has a high z-index to appear above other elements
+              zIndex: 100 
+            }}
           >
             <button 
               className="tooltip-close-btn" 

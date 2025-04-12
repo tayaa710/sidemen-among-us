@@ -155,6 +155,8 @@
     max-height: 60vh;
     overflow-y: auto;
     transition: transform 0.2s ease-out;
+    /* Ensure tooltip is always visible regardless of position */
+    max-width: 80vw;
 }
 
 /* Horizontal positioning */
@@ -232,11 +234,14 @@
 }
 
 /* Remove the previous positioning selector */
+/* Removing this rule since it's causing tooltips to not appear for the last videos */
+/* 
 .video-card-container:has(.video-tooltip):last-child .video-tooltip,
 .video-card-container:has(.video-tooltip):nth-last-child(2) .video-tooltip,
 .video-card-container:has(.video-tooltip):nth-last-child(3) .video-tooltip {
-    display: none; /* Remove this rule as we now handle positioning dynamically */
+    display: none;
 }
+*/
 
 .tooltip-content {
     padding: 18px;
