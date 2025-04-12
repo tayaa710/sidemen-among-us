@@ -359,10 +359,13 @@ const HomeScreen = () => {
 
   // Update videoData when filteredAndSortedVideos changes
   useEffect(() => {
-    setVideoData(filteredAndSortedVideos);
-    // Reset the number of videos to show when filters change
-    setVideosToShow(VIDEOS_PER_PAGE);
-  }, [filteredAndSortedVideos]);
+    // Only update if the result actually changed to avoid infinite loops
+    if (JSON.stringify(videoData) !== JSON.stringify(filteredAndSortedVideos)) {
+      setVideoData(filteredAndSortedVideos);
+      // Reset the number of videos to show when filters change
+      setVideosToShow(VIDEOS_PER_PAGE);
+    }
+  }, [filteredAndSortedVideos, videoData]);
 
   // Toggle filter visibility
   const toggleFilters = () => {

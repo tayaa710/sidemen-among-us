@@ -1,0 +1,16 @@
+/* TEAM */
+Creator: Fan-made site 
+Site: https://www.sidemenamongus.co.uk/
+Twitter: N/A
+Location: United Kingdom
+
+/* SITE */
+Last update: 2024-06-25
+Standards: HTML5, CSS3, JavaScript
+Components: React, Vite
+Software: Visual Studio Code
+
+/* DISCLAIMER */
+This is an unofficial fan-made site.
+All content, media, and intellectual property belongs to the Sidemen.
+This site is created for non-commercial purposes, intended as a fan archive. 
