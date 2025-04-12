@@ -5,8 +5,10 @@
     <!-- DNS prefetch and preconnect for external domains -->
     <link rel="dns-prefetch" href="https://www.youtube.com" />
     <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+    <link rel="dns-prefetch" href="https://sidemen-among-us-backend.onrender.com" />
     <link rel="preconnect" href="https://www.youtube.com" crossorigin />
     <link rel="preconnect" href="https://www.google-analytics.com" crossorigin />
+    <link rel="preconnect" href="https://sidemen-among-us-backend.onrender.com" crossorigin />
     
     <!-- Favicon references with cache control -->
     <link rel="icon" href="/favicons/favicon.ico" sizes="any" />
@@ -64,7 +66,14 @@
     </script>
     
     <!-- Preload critical assets -->
-    <link rel="preload" href="/src/main.jsx" as="script" />
+    <link rel="preload" href="/src/assets/globals.css" as="style" />
+    
+    <!-- Prefetch component chunks - these will be loaded dynamically by Vite -->
+    <link rel="modulepreload" href="/src/HomeScreen/HomeScreen.jsx" />
+    <link rel="modulepreload" href="/src/Video/Video.jsx" />
+    
+    <!-- Preconnect to API endpoints -->
+    <link rel="preconnect" href="https://sidemen-among-us-backend.onrender.com" crossorigin />
     
     <!-- Load critical CSS first -->
     <link rel="stylesheet" href="/src/assets/globals.css" />

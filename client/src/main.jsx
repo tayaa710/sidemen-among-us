@@ -1,7 +1,11 @@
 import { createRoot } from "react-dom/client";
 import { lazy, Suspense } from "react";
 import "./assets/globals.css";
-import { Analytics } from "@vercel/analytics/react";
+
+// Split analytics into a separate chunk that loads after main content
+const Analytics = lazy(() => import("@vercel/analytics/react").then(module => ({
+  default: module.Analytics
+})));
 
 // Use lazy loading for the main App component
 const App = lazy(() => import("./App/App.jsx"));
@@ -44,6 +48,8 @@ createRoot(document.getElementById("root")).render(
     <Suspense fallback={<LoadingScreen />}>
       <App />
     </Suspense>
-    <Analytics />
+    <Suspense fallback={null}>
+      <Analytics />
+    </Suspense>
   </>
 );

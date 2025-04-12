@@ -1,8 +1,22 @@
 import { lazy, Suspense } from "react";
 import "./App.css";
 
-// Lazy load the HomeScreen component
-const HomeScreen = lazy(() => import("../HomeScreen/HomeScreen.jsx"));
+// Lazy load the HomeScreen component with dynamic import and prefetching
+const HomeScreen = lazy(() => {
+  // Prefetch related components after the main content loads
+  const prefetchRelatedComponents = () => {
+    // This can be executed after the HomeScreen loads
+    import("../Video/Video.jsx");
+    import("../HomeScreen/filterBar/FilterBar.jsx");
+    import("../HomeScreen/players/Players.jsx");
+  };
+
+  return import("../HomeScreen/HomeScreen.jsx").then(module => {
+    // Trigger prefetch in a non-blocking way
+    setTimeout(prefetchRelatedComponents, 2000);
+    return module;
+  });
+});
 
 // Simple loading indicator for HomeScreen
 const HomeScreenLoader = () => (
