@@ -14,7 +14,7 @@ const formatDuration = (duration) => {
   return duration;
 };
 
-const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players, roles, youtubeUrl, isLastRow }) => {
+const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players, roles, youtubeUrl, isLastRow, isTopVisible = false }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState("right");
   const [verticalPosition, setVerticalPosition] = useState("top");
@@ -236,7 +236,8 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
             src={thumbnail} 
             alt={title} 
             className="video-thumbnail" 
-            loading="lazy" 
+            loading={isTopVisible ? "eager" : "lazy"} 
+            fetchpriority={isTopVisible ? "high" : "auto"}
           />
           <div className="video-duration">{formatDuration(duration)}</div>
           

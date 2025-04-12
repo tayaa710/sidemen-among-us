@@ -80,6 +80,9 @@
     gap: 25px;
     position: relative;
     z-index: 2;
+    min-height: 300px;
+    width: 100%;
+    contain: layout paint;
 }
 
 .loadingMessage, 
@@ -97,6 +100,8 @@
     align-items: center;
     justify-content: center;
     min-height: 400px;
+    margin: 0;
+    width: 100%;
 }
 
 .loadingMessage::before {

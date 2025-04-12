@@ -10,6 +10,33 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     emptyOutDir: true,
-    sourcemap: false
+    sourcemap: false,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          // Split UI libraries into separate chunks
+          ui: ['primereact'],
+        },
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        assetFileNames: ({name}) => {
+          if (/\.(gif|jpe?g|png|svg)$/.test(name ?? '')) {
+            return 'assets/images/[name]-[hash][extname]';
+          }
+          if (/\.css$/.test(name ?? '')) {
+            return 'assets/css/[name]-[hash][extname]';
+          }
+          return 'assets/[name]-[hash][extname]';
+        }
+      }
+    }
   }
 })

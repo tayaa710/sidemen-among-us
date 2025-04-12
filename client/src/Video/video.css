@@ -30,6 +30,8 @@
     width: 100%;
     overflow: hidden;
     aspect-ratio: 16/9;
+    background-color: var(--dark-bg-secondary);
+    min-height: 200px;
 }
 
 .video-thumbnail {
@@ -38,6 +40,8 @@
     object-fit: cover;
     display: block;
     transition: transform 0.5s ease;
+    aspect-ratio: 16/9;
+    contain: size paint;
 }
 
 .video-card-container:hover .video-thumbnail {

@@ -432,7 +432,7 @@ const HomeScreen = () => {
               <div className="noResultsMessage">No videos match your filters. Try adjusting your search criteria.</div>
             ) : (
               <>
-                {videosToDisplay.map((video) => (
+                {videosToDisplay.map((video, index) => (
                   <Video
                     key={video.id}
                     title={video.title}
@@ -444,6 +444,7 @@ const HomeScreen = () => {
                     roles={video.roles}
                     youtubeUrl={video.videoUrl}
                     isLastRow={videoData.indexOf(video) >= videoData.length - (videoData.length % 3 || 3)}
+                    isTopVisible={index < 3} // Consider first 3 videos as top visible for LCP optimization
                   />
                 ))}
                 
