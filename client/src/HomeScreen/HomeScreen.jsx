@@ -44,6 +44,9 @@ const HomeScreen = () => {
   const observerTarget = useRef(null);
   const hasMore = videosToShow < videoData.length;
 
+  // Use a ref to store the previous filtered videos result
+  const previousFilteredVideosRef = useRef([]);
+
   // Define game modes with their patterns for title searching
   const gameModes = [
     { name: "Chaos", patterns: ["chaos"] },
@@ -359,13 +362,25 @@ const HomeScreen = () => {
 
   // Update videoData when filteredAndSortedVideos changes
   useEffect(() => {
-    // Only update if the result actually changed to avoid infinite loops
-    if (JSON.stringify(videoData) !== JSON.stringify(filteredAndSortedVideos)) {
+    // Skip the initial render
+    if (previousFilteredVideosRef.current.length === 0 && filteredAndSortedVideos.length === 0) {
+      return;
+    }
+    
+    // Check if arrays have different lengths (quick way to detect changes)
+    const hasChanged = previousFilteredVideosRef.current.length !== filteredAndSortedVideos.length ||
+      // Check if the video IDs have changed (more efficient than full JSON stringify)
+      JSON.stringify(filteredAndSortedVideos.map(v => v.id)) !== 
+      JSON.stringify(previousFilteredVideosRef.current.map(v => v.id));
+    
+    if (hasChanged) {
       setVideoData(filteredAndSortedVideos);
       // Reset the number of videos to show when filters change
       setVideosToShow(VIDEOS_PER_PAGE);
+      // Update the ref to the current value
+      previousFilteredVideosRef.current = filteredAndSortedVideos;
     }
-  }, [filteredAndSortedVideos, videoData]);
+  }, [filteredAndSortedVideos]);
 
   // Toggle filter visibility
   const toggleFilters = () => {
