@@ -107,4 +107,13 @@ a {
 a:hover {
   color: #ff3333;
   text-decoration: underline;
+}
+
+/* Disclaimer styling for better contrast */
+.disclaimer {
+  background-color: #000000;
+  color: #ffffff;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 500;
 } 
