@@ -77,7 +77,7 @@ const HomeScreen = () => {
         // Fetch roles separately to handle errors better
         let roles = {};
         try {
-          const rolesResponse = await axios.get("http://localhost:3001/api/roles", { timeout: 15000 });
+          const rolesResponse = await axios.get("https://sidemen-among-us-backend.onrender.com/api/roles", { timeout: 15000 });
           roles = rolesResponse.data;
           
           // Set role descriptions if valid
