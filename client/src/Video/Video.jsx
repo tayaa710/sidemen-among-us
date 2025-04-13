@@ -237,7 +237,7 @@ const Video = memo(({ title, thumbnail, duration, viewCount, likeCount, players,
             alt={title} 
             className="video-thumbnail" 
             loading={isTopVisible ? "eager" : "lazy"} 
-            fetchpriority={isTopVisible ? "high" : "auto"}
+            fetchPriority={isTopVisible ? "high" : "auto"}
           />
           <div className="video-duration">{formatDuration(duration)}</div>
           

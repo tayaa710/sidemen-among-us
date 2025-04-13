@@ -5,18 +5,32 @@ body {
     color: #fff; /* Ensure text is visible on dark background */
 }
 
+:root {
+    /* Color variables */
+    --dark-bg-primary: #121212;
+    --dark-bg-secondary: #1c1c1c;
+    --dark-bg-tertiary: #222222;
+    --dark-bg-quaternary: #2d2d2d;
+    --text-primary: #ffffff;
+    --text-secondary: #aaaaaa;
+    --text-muted: #777777;
+    --accent-gold: #ffc107;
+    --sidemen-red: #f22613;
+    --border-color: #333333;
+}
+
 .container {
     display: flex;
     flex-direction: column;
 }
 
 .header {
-    background-color: #1c1c1c; /* Darker header */
+    background-color: var(--dark-bg-secondary); /* Darker header */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .main {
-    background-color: #181818; /* Dark main area */
+    background-color: var(--dark-bg-primary); /* Dark main area */
 }

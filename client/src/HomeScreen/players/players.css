@@ -1,178 +1,354 @@
-/* Players main wrapper */
+/* Players container */
 .players-wrapper {
   width: 100%;
-  background-color: rgba(20, 20, 20, 0.7);
-  border-radius: 12px;
-  margin-bottom: 20px;
-  border: 1px solid #333;
+  margin-top: 30px;
+  background-color: var(--dark-bg-tertiary);
+  border-radius: 14px;
   overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Players header */
-.players-header {
+/* Players header with title and toggle button */
+.players-header, .roles-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #333;
+  padding: 16px 24px;
+  background-color: var(--dark-bg-secondary);
+  border-bottom: 1px solid var(--border-color);
 }
 
-.players-title {
+.players-title, .roles-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
   margin: 0;
-  font-size: 1.4rem;
-  color: #fff;
   display: flex;
   align-items: center;
-  gap: 8px;
 }
 
-.player-count {
-  font-size: 1rem;
-  color: #aaa;
-  font-weight: normal;
+.player-count, .role-count {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-left: 8px;
 }
 
-.players-toggle {
-  background-color: rgba(255, 0, 0, 0.2);
-  color: #ff0000;
-  border: 1px solid rgba(255, 0, 0, 0.4);
-  padding: 8px 16px;
-  border-radius: 4px;
+.players-toggle, .roles-toggle {
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  padding: 8px 14px;
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
   transition: all 0.2s ease;
 }
 
-.players-toggle:hover {
-  background-color: rgba(255, 0, 0, 0.3);
+.players-toggle:hover, .roles-toggle:hover {
+  background-color: var(--dark-bg-quaternary);
+  color: var(--text-primary);
 }
 
-/* Players content */
-.players-content {
+/* Player content section */
+.players-content, .roles-content {
   padding: 20px;
 }
 
-/* Controls section */
-.players-controls {
+/* Player controls - search and sorting */
+.players-controls, .roles-controls {
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 20px;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .search-container {
   position: relative;
   flex: 1;
   min-width: 200px;
-  max-width: 400px;
 }
 
-.player-search {
+.player-search, .role-search {
   width: 100%;
-  padding: 10px 16px;
-  padding-right: 40px;
+  padding: 10px 14px;
+  padding-right: 36px;
   border-radius: 8px;
-  border: 1px solid #444;
-  background-color: #222;
-  color: #fff;
+  border: 1px solid var(--border-color);
+  background-color: var(--dark-bg-secondary);
+  color: var(--text-primary);
   font-size: 0.9rem;
-}
-
-.player-search:focus {
-  outline: none;
-  border-color: #ff0000;
 }
 
 .clear-search {
   position: absolute;
-  right: 12px;
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: #777;
+  color: var(--text-secondary);
   font-size: 1.2rem;
-  line-height: 1;
   cursor: pointer;
   padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.clear-search:hover {
-  color: #fff;
-}
-
-.sort-container {
+.sort-container, .role-type-selector, .role-selector {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.sort-container label {
-  color: #aaa;
+label {
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
-.player-sort {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid #444;
-  background-color: #222;
-  color: #fff;
+.player-sort, .role-type, .role-name {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: var(--dark-bg-secondary);
+  color: var(--text-primary);
   font-size: 0.9rem;
   cursor: pointer;
 }
 
-.player-sort:focus {
-  outline: none;
-  border-color: #ff0000;
-}
-
-/* Players grid */
-.players-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 20px;
+/* Role type filters */
+.role-type-filters {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
   width: 100%;
 }
 
-/* No players message */
-.no-players-message {
+.role-type-filter {
+  flex: 1;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background-color: var(--dark-bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.role-type-filter.active {
+  border-width: 2px;
+  transform: translateY(-2px);
+}
+
+.role-type-filter.type-crewmate {
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.role-type-filter.type-crewmate.active {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.role-type-filter.type-impostor {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.role-type-filter.type-impostor.active {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+.role-type-filter.type-neutral {
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.role-type-filter.type-neutral.active {
+  background-color: rgba(139, 92, 246, 0.15);
+  color: #8b5cf6;
+  border-color: #8b5cf6;
+}
+
+.role-type-filter:hover {
+  transform: translateY(-2px);
+}
+
+.role-type-filter.type-crewmate:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.role-type-filter.type-impostor:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.role-type-filter.type-neutral:hover {
+  background-color: rgba(139, 92, 246, 0.1);
+}
+
+/* Player grid layout */
+.players-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* No players found message */
+.no-players-message, .no-roles-message {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 40px;
-  color: #888;
-  font-size: 1.1rem;
-  background-color: rgba(0, 0, 0, 0.2);
+  padding: 30px;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  background-color: var(--dark-bg-quaternary);
+  border-radius: 12px;
+}
+
+/* Roles section */
+.roles-section {
+  margin-top: 30px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Roles grid layout */
+.roles-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* Role type section */
+.role-type-section {
+  margin-bottom: 20px;
+}
+
+.role-type-heading {
+  font-size: 1.4rem;
+  margin: 0 0 16px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: baseline;
+}
+
+.role-type-count {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-left: 10px;
+  font-weight: normal;
+}
+
+.role-type-crewmate {
+  color: #3b82f6; /* Blue */
+}
+
+.role-type-impostor {
+  color: #ef4444; /* Red */
+}
+
+.role-type-neutral {
+  color: #8b5cf6; /* Purple */
+}
+
+/* Roles list grid */
+.roles-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+/* Role card */
+.role-card {
+  background-color: var(--dark-bg-quaternary);
+  border-radius: 12px;
+  padding: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.role-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.role-name {
+  font-size: 1.2rem;
+  margin: 0 0 12px 0;
+  color: var(--text-primary);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
+}
+
+.role-description-text {
+  background-color: rgba(0, 0, 0, 0.1);
   border-radius: 8px;
+  padding: 12px;
+  flex: 1;
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+.role-description-text p {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.role-description-text p:last-child {
+  margin-bottom: 0;
+}
+
+.role-type-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
 }
 
 /* Responsive styles */
-@media (max-width: 768px) {
-  .players-controls {
+@media screen and (max-width: 768px) {
+  .players-controls, .roles-controls {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
   }
-  
-  .search-container {
-    max-width: none;
-  }
-  
-  .players-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  }
-}
 
-@media (max-width: 480px) {
+  .search-container, .sort-container, .role-type-selector, .role-selector {
+    width: 100%;
+  }
+
+  .sort-container, .role-type-selector, .role-selector {
+    margin-top: 12px;
+  }
+
+  .player-sort, .role-type, .role-name {
+    flex: 1;
+  }
+
   .players-grid {
     grid-template-columns: 1fr;
   }
-  
-  .players-header {
-    flex-direction: column;
-    gap: 12px;
-    text-align: center;
+
+  .roles-list {
+    grid-template-columns: 1fr;
+  }
+
+  .role-type-filters {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .role-type-filter {
+    min-width: 100px;
   }
 }
 

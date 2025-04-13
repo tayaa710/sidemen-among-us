@@ -35,6 +35,8 @@ const HomeScreen = () => {
   const [videosToShow, setVideosToShow] = useState(VIDEOS_PER_PAGE);
   // Loading more state
   const [loadingMore, setLoadingMore] = useState(false);
+  // roleDescriptions: Descriptions for each Among Us role
+  const [roleDescriptions, setRoleDescriptions] = useState({});
 
   const [loading, setLoading] = useState(true);
   // filtersCollapsed: State to track if the filter section is collapsed
@@ -66,11 +68,26 @@ const HomeScreen = () => {
       try {
         setLoading(true);
         
-        // Use Promise.all to fetch both endpoints concurrently
+        // Use Promise.all to fetch all endpoints concurrently
         const [videoResponse, statsResponse] = await Promise.all([
           axios.get("https://sidemen-among-us-backend.onrender.com/api/videos", { timeout: 15000 }),
           axios.get("https://sidemen-among-us-backend.onrender.com/api/sheetData", { timeout: 15000 })
         ]);
+        
+        // Fetch roles separately to handle errors better
+        let roles = {};
+        try {
+          const rolesResponse = await axios.get("http://localhost:3001/api/roles", { timeout: 15000 });
+          roles = rolesResponse.data;
+          
+          // Set role descriptions if valid
+          if (roles && typeof roles === 'object') {
+            setRoleDescriptions(roles);
+          }
+        } catch (rolesError) {
+          console.error("Error fetching role descriptions:", rolesError);
+          // Continue with the app even if roles can't be loaded
+        }
         
         const videos = videoResponse.data;
         const stats = statsResponse.data;
@@ -420,7 +437,7 @@ const HomeScreen = () => {
           </div>
           
           <div className="playersContainer">
-            <Players playerStats={playerStats} />
+            <Players playerStats={playerStats} roleDescriptions={roleDescriptions} />
           </div>
         </div>
         
