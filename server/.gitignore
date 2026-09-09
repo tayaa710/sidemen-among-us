@@ -1,5 +1,6 @@
 node_modules
 .env
 .DS_Store
-videoData.json
-sheetData.json
+# scratch checkouts made by the role fetchers
+temp/
+tmp/
