@@ -1,0 +1,133 @@
+.homeContainer {
+  padding: 0 40px 60px;
+  min-height: 100vh;
+}
+
+/* Header */
+.headerSection {
+  padding: 48px 0 40px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.headerSection h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--text);
+}
+
+.headerSection h1 span {
+  color: var(--accent);
+}
+
+/* Layout */
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.filterAndStatsSection {
+  margin-bottom: 32px;
+}
+
+.playersContainer {
+  margin-top: 12px;
+}
+
+.contentSection {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Video Grid */
+.videosContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.loadingMessage,
+.noResultsMessage {
+  grid-column: 1 / -1;
+  padding: 100px 40px;
+  text-align: center;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: 0.95rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.loadingMessage::before {
+  content: '';
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2.5px solid var(--border);
+  border-top-color: var(--accent);
+  animation: spin 0.8s linear infinite;
+}
+
+.noResultsMessage::before {
+  content: 'No results';
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Infinite scroll */
+.scroll-loader {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  padding: 32px 0;
+}
+
+.scroll-loader.hidden {
+  display: none;
+}
+
+.loading-spinner {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2.5px solid var(--border);
+  border-top-color: var(--accent);
+  animation: spin 0.8s linear infinite;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .videosContainer {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .homeContainer {
+    padding: 0 20px 40px;
+  }
+
+  .headerSection {
+    padding: 32px 0 28px;
+    margin-bottom: 24px;
+  }
+
+  .headerSection h1 {
+    font-size: 1.5rem;
+  }
+
+  .videosContainer {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}

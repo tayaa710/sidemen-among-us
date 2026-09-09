@@ -1,0 +1,309 @@
+/* Players wrapper */
+.players-wrapper {
+  width: 100%;
+  background: var(--bg-surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+/* Headers */
+.players-header,
+.roles-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+}
+
+.roles-header {
+  border-top: 1px solid var(--border);
+}
+
+.players-title,
+.roles-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.player-count,
+.role-count {
+  font-size: 0.78rem;
+  color: var(--text-3);
+  margin-left: 8px;
+  font-weight: 400;
+}
+
+.players-toggle,
+.roles-toggle {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-2);
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  transition: all var(--transition);
+}
+
+.players-toggle:hover,
+.roles-toggle:hover {
+  color: var(--text);
+  border-color: var(--border-hover);
+  background: var(--bg-hover);
+}
+
+/* Content */
+.players-content,
+.roles-content {
+  padding: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.players-controls,
+.roles-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.search-container {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.player-search,
+.role-search {
+  width: 100%;
+  padding: 9px 14px;
+  padding-right: 34px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-base);
+  color: var(--text);
+  font-size: 0.85rem;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.player-search:focus,
+.role-search:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-muted-2);
+}
+
+.player-search::placeholder,
+.role-search::placeholder {
+  color: var(--text-3);
+}
+
+.clear-search {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-3);
+  font-size: 1.1rem;
+  padding: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  background: none;
+  border-radius: 50%;
+  transition: color var(--transition);
+}
+
+.clear-search:hover { color: var(--text); }
+
+.sort-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sort-container label {
+  font-size: 0.78rem;
+  color: var(--text-3);
+  font-weight: 500;
+}
+
+.player-sort {
+  padding: 9px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-base);
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+/* Role type tabs */
+.role-type-filters {
+  display: flex;
+  gap: 2px;
+  margin-top: 14px;
+  width: 100%;
+  background: var(--bg-base);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  border: 1px solid var(--border);
+}
+
+.role-type-filter {
+  flex: 1;
+  padding: 8px 16px;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+  color: var(--text-3);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: center;
+  transition: all var(--transition);
+}
+
+.role-type-filter:hover:not(.active) {
+  color: var(--text-2);
+  background: var(--bg-elevated);
+}
+
+.role-type-filter.active {
+  color: var(--text);
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow);
+}
+
+.role-type-filter.type-crewmate.active {
+  color: var(--blue);
+}
+
+.role-type-filter.type-impostor.active {
+  color: var(--accent);
+}
+
+.role-type-filter.type-neutral.active {
+  color: var(--purple);
+}
+
+/* Players grid */
+.players-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.no-players-message,
+.no-roles-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 32px;
+  color: var(--text-3);
+  font-size: 0.88rem;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+}
+
+/* Roles */
+.roles-section {}
+
+.roles-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.role-type-heading {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 14px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: baseline;
+}
+
+.role-type-count {
+  font-size: 0.78rem;
+  color: var(--text-3);
+  margin-left: 8px;
+  font-weight: 400;
+}
+
+.role-type-crewmate { color: var(--blue); }
+.role-type-impostor { color: var(--accent); }
+.role-type-neutral { color: var(--purple); }
+
+.roles-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 10px;
+}
+
+.role-card {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: border-color var(--transition);
+}
+
+.role-card:hover {
+  border-color: var(--border-hover);
+}
+
+.role-name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+  color: var(--text);
+}
+
+.role-description-text {
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--text-2);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.role-description-text p {
+  margin: 0 0 6px 0;
+}
+
+.role-description-text p:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .players-controls,
+  .roles-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .players-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .roles-list {
+    grid-template-columns: 1fr;
+  }
+
+  .players-content,
+  .roles-content {
+    padding: 16px;
+  }
+}
