@@ -112,6 +112,8 @@ server/
 
 This is a non-commercial fan site. It is not affiliated with, endorsed by, or connected to the Sidemen.
 
+The visual design (the dark theme, layout and CSS) was done with Claude, because visual design is not my strong point. The data pipeline, the API and its caching, the wiki scrapers, the React components and the filtering logic are my own work.
+
 ## License
 
 [MIT](LICENSE)
