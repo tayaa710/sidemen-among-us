@@ -68,16 +68,18 @@ const HomeScreen = () => {
       try {
         setLoading(true);
         
+        const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
+
         // Use Promise.all to fetch all endpoints concurrently
         const [videoResponse, statsResponse] = await Promise.all([
-          axios.get("https://sidemen-among-us-backend.onrender.com/api/videos", { timeout: 15000 }),
-          axios.get("https://sidemen-among-us-backend.onrender.com/api/sheetData", { timeout: 15000 })
+          axios.get(`${API_BASE}/api/videos`, { timeout: 15000 }),
+          axios.get(`${API_BASE}/api/sheetData`, { timeout: 15000 })
         ]);
-        
+
         // Fetch roles separately to handle errors better
         let roles = {};
         try {
-          const rolesResponse = await axios.get("https://sidemen-among-us-backend.onrender.com/api/roles", { timeout: 15000 });
+          const rolesResponse = await axios.get(`${API_BASE}/api/roles`, { timeout: 15000 });
           roles = rolesResponse.data;
           
           // Set role descriptions if valid

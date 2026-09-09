@@ -1,42 +1,35 @@
-/* Sidemen-inspired color palette */
-:root {
-  /* Primary colors */
-  --sidemen-red: #ff0000;
-  --sidemen-black: #000000;
-  --sidemen-white: #ffffff;
-  
-  /* Dark theme background colors */
-  --dark-bg-primary: #0a0a0a;
-  --dark-bg-secondary: #141414;
-  --dark-bg-tertiary: #1c1c1c;
-  --dark-bg-accent: #242424;
-  
-  /* Text colors */
-  --text-primary: #ffffff;
-  --text-secondary: #cccccc;
-  --text-muted: #888888;
-  
-  /* Accent colors */
-  --accent-red: #e60012;
-  --accent-gold: #ffcc00;
-  
-  /* Border colors */
-  --border-dark: #333333;
-  --border-darker: #444444;
-  
-  /* Shadow */
-  --shadow-soft: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-strong: 0 8px 20px rgba(0, 0, 0, 0.3);
-  
-  /* Animation */
-  --transition-fast: 0.15s ease;
-  --transition-standard: 0.3s ease;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-  /* Font */
-  --font-family-main: 'Poppins', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+:root {
+  --bg-base: #0c0c0e;
+  --bg-surface: #141416;
+  --bg-elevated: #1a1a1e;
+  --bg-hover: #222226;
+  --border: #2a2a2e;
+  --border-hover: #3a3a3e;
+  --text: #ececee;
+  --text-2: #a0a0a8;
+  --text-3: #64646c;
+  --accent: #e63946;
+  --accent-hover: #f04e5c;
+  --accent-muted: rgba(230, 57, 70, 0.12);
+  --accent-muted-2: rgba(230, 57, 70, 0.06);
+  --blue: #4a9eff;
+  --blue-muted: rgba(74, 158, 255, 0.12);
+  --green: #2ecc71;
+  --green-muted: rgba(46, 204, 113, 0.12);
+  --gold: #f0a500;
+  --gold-muted: rgba(240, 165, 0, 0.10);
+  --purple: #9b59b6;
+  --purple-muted: rgba(155, 89, 182, 0.12);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --radius-lg: 14px;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
+  --shadow-lg: 0 4px 12px rgba(0,0,0,0.3), 0 16px 48px rgba(0,0,0,0.4);
+  --transition: 0.18s ease;
 }
 
-/* Base element styling */
 * {
   margin: 0;
   padding: 0;
@@ -44,76 +37,60 @@
 }
 
 body {
-  font-family: var(--font-family-main);
-  background-color: var(--dark-bg-primary);
-  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--bg-base);
+  color: var(--text);
   line-height: 1.5;
-  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 14px;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
 
-::-webkit-scrollbar-track {
-  background: var(--dark-bg-primary);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--accent-red);
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #ff3333;
-}
-
-/* Typography */
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 700;
-  margin-bottom: 0.5em;
+  font-weight: 600;
   letter-spacing: -0.02em;
+  line-height: 1.3;
 }
 
-/* Focus styles */
-:focus {
-  outline: 2px solid var(--accent-red);
+:focus-visible {
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* Button styles */
+:focus:not(:focus-visible) { outline: none; }
+
 button {
-  background-color: var(--accent-red);
-  color: var(--sidemen-white);
-  border: none;
-  border-radius: 4px;
-  font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
-  transition: background-color var(--transition-fast);
 }
 
-button:hover {
-  background-color: #ff3333;
-}
-
-/* Link styles */
 a {
-  color: var(--accent-red);
+  color: var(--accent);
   text-decoration: none;
-  transition: color var(--transition-fast);
+  transition: color var(--transition);
 }
 
-a:hover {
-  color: #ff3333;
-  text-decoration: underline;
+a:hover { color: var(--accent-hover); }
+
+input, select {
+  font-family: inherit;
 }
 
-/* Disclaimer styling for better contrast */
 .disclaimer {
-  background-color: #000000;
-  color: #ffffff;
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-weight: 500;
-} 
+  color: var(--accent);
+  font-weight: 600;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

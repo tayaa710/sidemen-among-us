@@ -18,22 +18,20 @@ const HomeScreen = lazy(() => {
   });
 });
 
-// Simple loading indicator for HomeScreen
 const HomeScreenLoader = () => (
-  <div style={{ 
-    display: 'flex', 
-    justifyContent: 'center', 
+  <div style={{
+    display: 'flex',
+    justifyContent: 'center',
     alignItems: 'center',
-    minHeight: '50vh', 
-    padding: '2rem'
+    minHeight: '50vh'
   }}>
-    <div style={{ 
-      width: '40px', 
-      height: '40px',
-      borderRadius: '50%', 
-      border: '3px solid rgba(255, 255, 255, 0.1)',
-      borderTopColor: '#ff0000',
-      animation: 'spin 1s linear infinite'
+    <div style={{
+      width: '24px',
+      height: '24px',
+      borderRadius: '50%',
+      border: '2px solid #262626',
+      borderTopColor: '#c41e1e',
+      animation: 'spin 0.8s linear infinite'
     }}></div>
   </div>
 );
@@ -46,7 +44,7 @@ const App = () => {
           <HomeScreen />
         </Suspense>
       </div>
-      <footer style={{ textAlign: 'center', fontSize: '0.85rem', color: '#777', padding: '1rem' }}>
+      <footer>
         <p>
           This is an <strong><span className="disclaimer">unofficial fan-made site</span></strong>. It is not affiliated with, endorsed by, or connected to the Sidemen or their official channels. All content belongs to its respective owners.
         </p>

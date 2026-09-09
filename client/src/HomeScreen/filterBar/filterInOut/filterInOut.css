@@ -1,142 +1,93 @@
 .filter-section {
-  margin-bottom: 15px;
-  position: relative;
-  border-radius: 6px;
-  background-color: var(--dark-bg-secondary);
-  padding: 8px 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 12px 14px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
 }
 
+.filter-section::before { display: none; }
+
 .filter-title {
-  margin: 10px 0;
-  font-size: 1.1rem;
-  color: var(--text-primary);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  position: relative;
+  margin: 0;
+  padding: 2px 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-2);
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: color 0.2s ease;
+  user-select: none;
+  transition: color var(--transition);
 }
+
+.filter-title:hover { color: var(--text); }
 
 .title-with-filters {
   display: flex;
   flex: 1;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .applied-filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
-  font-size: 0.8rem;
-  font-weight: normal;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 400;
   text-transform: none;
-  color: var(--text-secondary);
-  max-width: 70%;
 }
 
 .included-filters {
-  color: var(--sidemen-red);
-  background-color: rgba(255, 0, 0, 0.1);
-  padding: 2px 8px;
-  border-radius: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
+  color: var(--accent);
+  background: var(--accent-muted);
+  padding: 2px 7px;
+  border-radius: 3px;
 }
 
 .excluded-filters {
-  color: #888;
-  background-color: rgba(0, 0, 0, 0.2);
-  padding: 2px 8px;
-  border-radius: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-
-.filter-title:hover {
-  color: var(--sidemen-red);
+  color: var(--text-3);
+  background: var(--bg-hover);
+  padding: 2px 7px;
+  border-radius: 3px;
+  text-decoration: line-through;
 }
 
 .toggle-icon {
-  margin-left: 10px;
-  font-weight: bold;
-  font-size: 1.2rem;
+  font-size: 0.65rem;
   width: 20px;
   height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--dark-bg-tertiary);
-  border-radius: 50%;
-  color: var(--sidemen-red);
+  color: var(--text-3);
+  background: var(--bg-hover);
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: background var(--transition);
+}
+
+.filter-title:hover .toggle-icon {
+  background: var(--border-hover);
 }
 
 .filter-options {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  max-height: 280px;
+  gap: 6px;
+  max-height: 220px;
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--sidemen-red) var(--dark-bg-tertiary);
-  padding: 5px;
-  padding-right: 10px;
-  position: relative;
-  animation: slideDown 0.3s ease;
+  padding: 10px 0 2px;
+  animation: filterReveal 0.2s ease;
 }
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    max-height: 0;
-  }
-  to {
-    opacity: 1;
-    max-height: 280px;
-  }
+@keyframes filterReveal {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Decoration */
-.filter-section::before {
-  content: '';
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  width: 20px;
-  height: 20px;
-  background-color: var(--sidemen-red);
-  opacity: 0.5;
-  border-radius: 50%;
-  filter: blur(10px);
-  z-index: 0;
-}
-
-/* Scrollbar styling for webkit browsers */
-.filter-options::-webkit-scrollbar {
-  width: 6px;
-}
-
-.filter-options::-webkit-scrollbar-track {
-  background: var(--dark-bg-tertiary);
-  border-radius: 4px;
-}
-
-.filter-options::-webkit-scrollbar-thumb {
-  background-color: var(--sidemen-red);
-  border-radius: 4px;
-  border: 1px solid var(--dark-bg-tertiary);
-}
-
-.filter-options::-webkit-scrollbar-thumb:hover {
-  background-color: var(--accent-red);
-}
+.filter-options::-webkit-scrollbar { width: 4px; }
+.filter-options::-webkit-scrollbar-track { background: transparent; }
+.filter-options::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
