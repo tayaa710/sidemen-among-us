@@ -1,15 +1,17 @@
-const express = require("express");
-const cors = require("cors");
-const morgan = require("morgan");
-const { fetchVideos } = require("./utils/fetchVideos");
-const { fetchAllTheRolesMod } = require("./utils/fetchAllTheRolesMod");
-// Import fetchOtherRolesMod dynamically
-const fs = require("fs");
-const path = require("path");
-const app = express();
-require("dotenv").config();
+import express from "express";
+import cors from "cors";
+import morgan from "morgan";
+import fs from "fs";
+import path from "path";
+import "dotenv/config";
 
-const { fetchSheetData } = require("./utils/fetchSheetData");
+import { fetchVideos } from "./utils/fetchVideos.js";
+import { fetchAllTheRolesMod } from "./utils/fetchAllTheRolesMod.js";
+import { fetchSheetData } from "./utils/fetchSheetData.js";
+import { fetchOtherRolesMod } from "./utils/fetchTheOtherRolesMod.js";
+import { fetchTownOfUsRMod } from "./utils/fetchTownOfUsRMod.js";
+
+const app = express();
 
 // Cache variables
 let videoDataCache = null;
@@ -23,8 +25,8 @@ let theOtherRolesTimestamp = 0;
 let townOfUsRDataCache = null;
 let townOfUsRTimestamp = 0;
 
-// Cache expiry time (13 hours)
-const CACHE_EXPIRY = 20*60*1000;
+// Cache expiry time (20 minutes)
+const CACHE_EXPIRY = 20 * 60 * 1000;
 
 // Reset cache function for testing
 const resetCache = () => {
@@ -39,7 +41,7 @@ const resetCache = () => {
   townOfUsRDataCache = null;
   townOfUsRTimestamp = 0;
   console.log("All caches have been reset");
-}
+};
 
 // Try to load existing cache from disk
 try {
@@ -47,12 +49,12 @@ try {
     videoDataCache = JSON.parse(fs.readFileSync("videoData.json", "utf8"));
     videoDataTimestamp = Date.now();
   }
-  
+
   if (fs.existsSync("sheetData.json")) {
     sheetDataCache = JSON.parse(fs.readFileSync("sheetData.json", "utf8"));
     sheetDataTimestamp = Date.now();
   }
-  
+
   if (fs.existsSync("roleInformation/allTheRolesMod.json")) {
     rolesDataCache = JSON.parse(fs.readFileSync("roleInformation/allTheRolesMod.json", "utf8"));
     rolesDataTimestamp = Date.now();
@@ -75,8 +77,16 @@ try {
 const preloadVideoData = async () => {
   try {
     if (!videoDataCache || Date.now() - videoDataTimestamp >= CACHE_EXPIRY) {
-      console.log("Preloading video data...");
       const apiKey = process.env.APIKEY;
+      if (!apiKey) {
+        if (videoDataCache) {
+          console.log("No YouTube API key set - using cached video data.");
+        } else {
+          console.warn("No YouTube API key and no cached video data available.");
+        }
+        return;
+      }
+      console.log("Preloading video data...");
       const videoData = await fetchVideos(apiKey);
       if (videoData && Array.isArray(videoData) && videoData.length > 0) {
         videoDataCache = videoData;
@@ -136,10 +146,8 @@ const preloadRolesData = async () => {
     // Preload TheOtherRoles data
     if (!theOtherRolesDataCache || Date.now() - theOtherRolesTimestamp >= CACHE_EXPIRY) {
       console.log("Preloading TheOtherRoles data...");
-      // Dynamically import the ESM module
-      const fetchOtherRolesModule = await import('./utils/fetchTheOtherRolesMod.js');
-      const theOtherRolesData = await fetchOtherRolesModule.fetchOtherRolesMod();
-      
+      const theOtherRolesData = await fetchOtherRolesMod();
+
       if (theOtherRolesData) {
         theOtherRolesDataCache = theOtherRolesData;
         theOtherRolesTimestamp = Date.now();
@@ -150,14 +158,12 @@ const preloadRolesData = async () => {
     } else {
       console.log("Using existing TheOtherRoles data cache.");
     }
-    
+
     // Preload Town Of Us R data
     if (!townOfUsRDataCache || Date.now() - townOfUsRTimestamp >= CACHE_EXPIRY) {
       console.log("Preloading Town Of Us R data...");
-      // Dynamically import the ESM module
-      const fetchTownOfUsRModule = await import('./utils/fetchTownOfUsRMod.js');
-      const townOfUsRData = await fetchTownOfUsRModule.fetchTownOfUsRMod();
-      
+      const townOfUsRData = await fetchTownOfUsRMod();
+
       if (townOfUsRData) {
         townOfUsRDataCache = townOfUsRData;
         townOfUsRTimestamp = Date.now();
@@ -207,44 +213,32 @@ const unknownEndpoint = (request, response) => {
 // Add endpoint to reset cache for testing
 app.get("/api/reset-cache", (req, res) => {
   resetCache();
-  // Optionally delete cache files too
   try {
-    if (fs.existsSync("videoData.json")) {
-      fs.unlinkSync("videoData.json");
-    }
-    if (fs.existsSync("sheetData.json")) {
-      fs.unlinkSync("sheetData.json");
-    }
-    if (fs.existsSync("roleInformation/allTheRolesMod.json")) {
-      fs.unlinkSync("roleInformation/allTheRolesMod.json");
-    }
-    if (fs.existsSync("roleInformation/theOtherRolesMod.json")) {
-      fs.unlinkSync("roleInformation/theOtherRolesMod.json");
-    }
-    if (fs.existsSync("roleInformation/townOfUsRMod.json")) {
-      fs.unlinkSync("roleInformation/townOfUsRMod.json");
-    }
+    if (fs.existsSync("videoData.json")) fs.unlinkSync("videoData.json");
+    if (fs.existsSync("sheetData.json")) fs.unlinkSync("sheetData.json");
+    if (fs.existsSync("roleInformation/allTheRolesMod.json")) fs.unlinkSync("roleInformation/allTheRolesMod.json");
+    if (fs.existsSync("roleInformation/theOtherRolesMod.json")) fs.unlinkSync("roleInformation/theOtherRolesMod.json");
+    if (fs.existsSync("roleInformation/townOfUsRMod.json")) fs.unlinkSync("roleInformation/townOfUsRMod.json");
   } catch (error) {
     console.error("Error deleting cache files:", error);
   }
-  
+
   res.json({ message: "Cache reset successfully" });
 });
 
-app.get("/api/roles", async (req,res) => {
+app.get("/api/roles", async (req, res) => {
   try {
     // Check if cache is valid
-    const cachesValid = rolesDataCache && 
+    const cachesValid = rolesDataCache &&
                         Date.now() - rolesDataTimestamp < CACHE_EXPIRY &&
-                        theOtherRolesDataCache && 
+                        theOtherRolesDataCache &&
                         Date.now() - theOtherRolesTimestamp < CACHE_EXPIRY &&
                         townOfUsRDataCache &&
                         Date.now() - townOfUsRTimestamp < CACHE_EXPIRY;
-    
+
     if (cachesValid) {
       console.log("Serving roles from cache");
-      
-      // Combine all roles from all mods into a single structure
+
       const combinedRoles = {
         crewmate: {
           ...rolesDataCache.crewmate,
@@ -262,144 +256,107 @@ app.get("/api/roles", async (req,res) => {
           ...townOfUsRDataCache.neutral
         }
       };
-      
+
       return res.json(combinedRoles);
     }
-    
+
     console.log("Fetching fresh roles data");
     const allTheRoles = await fetchAllTheRolesMod();
-    
-    // Dynamically import the ESM modules
-    const fetchOtherRolesModule = await import('./utils/fetchTheOtherRolesMod.js');
-    const theOtherRoles = await fetchOtherRolesModule.fetchOtherRolesMod();
-    
-    const fetchTownOfUsRModule = await import('./utils/fetchTownOfUsRMod.js');
-    const townOfUsRRoles = await fetchTownOfUsRModule.fetchTownOfUsRMod();
-    
-    // Check if all data fetching was successful
+    const theOtherRoles = await fetchOtherRolesMod();
+    const townOfUsRRoles = await fetchTownOfUsRMod();
+
     const allDataAvailable = allTheRoles && theOtherRoles && townOfUsRRoles;
-    
+
     if (allDataAvailable) {
-      // Update cache
       rolesDataCache = allTheRoles;
       rolesDataTimestamp = Date.now();
       theOtherRolesDataCache = theOtherRoles;
       theOtherRolesTimestamp = Date.now();
       townOfUsRDataCache = townOfUsRRoles;
       townOfUsRTimestamp = Date.now();
-      
-      // Combine all roles from all mods into a single structure
+
       const combinedRoles = {
-        crewmate: {
-          ...allTheRoles.crewmate,
-          ...theOtherRoles.crewmate,
-          ...townOfUsRRoles.crewmate
-        },
-        impostor: {
-          ...allTheRoles.impostor,
-          ...theOtherRoles.impostor,
-          ...townOfUsRRoles.impostor
-        },
-        neutral: {
-          ...allTheRoles.neutral,
-          ...theOtherRoles.neutral,
-          ...townOfUsRRoles.neutral
-        }
+        crewmate: { ...allTheRoles.crewmate, ...theOtherRoles.crewmate, ...townOfUsRRoles.crewmate },
+        impostor: { ...allTheRoles.impostor, ...theOtherRoles.impostor, ...townOfUsRRoles.impostor },
+        neutral: { ...allTheRoles.neutral, ...theOtherRoles.neutral, ...townOfUsRRoles.neutral }
       };
-      
+
       res.json(combinedRoles);
     } else {
-      // If we couldn't fetch all data, return what we have
       console.log("Some role data fetching failed, returning partial data");
-      
-      // Start with empty structure
-      const partialRoles = {
-        crewmate: {},
-        impostor: {},
-        neutral: {}
-      };
-      
-      // Add data from whatever sources succeeded
+      const partialRoles = { crewmate: {}, impostor: {}, neutral: {} };
+
       if (allTheRoles) {
-        partialRoles.crewmate = {...partialRoles.crewmate, ...allTheRoles.crewmate};
-        partialRoles.impostor = {...partialRoles.impostor, ...allTheRoles.impostor};
-        partialRoles.neutral = {...partialRoles.neutral, ...allTheRoles.neutral};
+        partialRoles.crewmate = { ...partialRoles.crewmate, ...allTheRoles.crewmate };
+        partialRoles.impostor = { ...partialRoles.impostor, ...allTheRoles.impostor };
+        partialRoles.neutral = { ...partialRoles.neutral, ...allTheRoles.neutral };
       }
-      
       if (theOtherRoles) {
-        partialRoles.crewmate = {...partialRoles.crewmate, ...theOtherRoles.crewmate};
-        partialRoles.impostor = {...partialRoles.impostor, ...theOtherRoles.impostor};
-        partialRoles.neutral = {...partialRoles.neutral, ...theOtherRoles.neutral};
+        partialRoles.crewmate = { ...partialRoles.crewmate, ...theOtherRoles.crewmate };
+        partialRoles.impostor = { ...partialRoles.impostor, ...theOtherRoles.impostor };
+        partialRoles.neutral = { ...partialRoles.neutral, ...theOtherRoles.neutral };
       }
-      
       if (townOfUsRRoles) {
-        partialRoles.crewmate = {...partialRoles.crewmate, ...townOfUsRRoles.crewmate};
-        partialRoles.impostor = {...partialRoles.impostor, ...townOfUsRRoles.impostor};
-        partialRoles.neutral = {...partialRoles.neutral, ...townOfUsRRoles.neutral};
+        partialRoles.crewmate = { ...partialRoles.crewmate, ...townOfUsRRoles.crewmate };
+        partialRoles.impostor = { ...partialRoles.impostor, ...townOfUsRRoles.impostor };
+        partialRoles.neutral = { ...partialRoles.neutral, ...townOfUsRRoles.neutral };
       }
-      
+
       res.json(partialRoles);
     }
   } catch (error) {
     console.error("Error fetching roles:", error);
-    
-    // Fallback to cached data if available
+
     const cacheAvailable = rolesDataCache || theOtherRolesDataCache || townOfUsRDataCache;
-    
     if (cacheAvailable) {
       console.log("Falling back to cached roles data");
-      
-      // Start with empty structure
-      const fallbackRoles = {
-        crewmate: {},
-        impostor: {},
-        neutral: {}
-      };
-      
-      // Add data from whatever caches are available
+      const fallbackRoles = { crewmate: {}, impostor: {}, neutral: {} };
+
       if (rolesDataCache) {
-        fallbackRoles.crewmate = {...fallbackRoles.crewmate, ...rolesDataCache.crewmate};
-        fallbackRoles.impostor = {...fallbackRoles.impostor, ...rolesDataCache.impostor};
-        fallbackRoles.neutral = {...fallbackRoles.neutral, ...rolesDataCache.neutral};
+        fallbackRoles.crewmate = { ...fallbackRoles.crewmate, ...rolesDataCache.crewmate };
+        fallbackRoles.impostor = { ...fallbackRoles.impostor, ...rolesDataCache.impostor };
+        fallbackRoles.neutral = { ...fallbackRoles.neutral, ...rolesDataCache.neutral };
       }
-      
       if (theOtherRolesDataCache) {
-        fallbackRoles.crewmate = {...fallbackRoles.crewmate, ...theOtherRolesDataCache.crewmate};
-        fallbackRoles.impostor = {...fallbackRoles.impostor, ...theOtherRolesDataCache.impostor};
-        fallbackRoles.neutral = {...fallbackRoles.neutral, ...theOtherRolesDataCache.neutral};
+        fallbackRoles.crewmate = { ...fallbackRoles.crewmate, ...theOtherRolesDataCache.crewmate };
+        fallbackRoles.impostor = { ...fallbackRoles.impostor, ...theOtherRolesDataCache.impostor };
+        fallbackRoles.neutral = { ...fallbackRoles.neutral, ...theOtherRolesDataCache.neutral };
       }
-      
       if (townOfUsRDataCache) {
-        fallbackRoles.crewmate = {...fallbackRoles.crewmate, ...townOfUsRDataCache.crewmate};
-        fallbackRoles.impostor = {...fallbackRoles.impostor, ...townOfUsRDataCache.impostor};
-        fallbackRoles.neutral = {...fallbackRoles.neutral, ...townOfUsRDataCache.neutral};
+        fallbackRoles.crewmate = { ...fallbackRoles.crewmate, ...townOfUsRDataCache.crewmate };
+        fallbackRoles.impostor = { ...fallbackRoles.impostor, ...townOfUsRDataCache.impostor };
+        fallbackRoles.neutral = { ...fallbackRoles.neutral, ...townOfUsRDataCache.neutral };
       }
-      
+
       return res.json(fallbackRoles);
     }
-    
+
     res.status(500).json({ error: "Failed to fetch roles" });
   }
 });
 
 app.get("/api/videos", async (request, response) => {
   try {
-    // Check if cache is valid
     if (videoDataCache && Date.now() - videoDataTimestamp < CACHE_EXPIRY) {
       console.log("Serving videos from cache");
       return response.json(videoDataCache);
     }
-    
+
     console.log("Fetching fresh video data");
     const apiKey = process.env.APIKEY;
+    if (!apiKey) {
+      if (videoDataCache) {
+        console.log("No API key, serving stale cache");
+        return response.json(videoDataCache);
+      }
+      return response.status(500).json({ error: "No API key configured and no cached data" });
+    }
+
     const videoData = await fetchVideos(apiKey);
-    
+
     if (videoData) {
-      // Update cache
       videoDataCache = videoData;
       videoDataTimestamp = Date.now();
-      
-      // Save to file for persistence
       fs.writeFileSync("videoData.json", JSON.stringify(videoData, null, 2));
       response.json(videoData);
     } else {
@@ -407,34 +364,27 @@ app.get("/api/videos", async (request, response) => {
     }
   } catch (error) {
     console.error("Error in video fetch:", error);
-    
-    // Fallback to cached data if available
     if (videoDataCache) {
       console.log("Falling back to cached data");
       return response.json(videoDataCache);
     }
-    
     response.status(500).json({ error: "Failed to fetch video data" });
   }
 });
 
 app.get("/api/sheetData", async (req, res) => {
   try {
-    // Check if cache is valid
     if (sheetDataCache && Date.now() - sheetDataTimestamp < CACHE_EXPIRY) {
       console.log("Serving sheet data from cache");
       return res.json(sheetDataCache);
     }
-    
+
     console.log("Fetching fresh sheet data");
     const data = await fetchSheetData();
-    
+
     if (data) {
-      // Update cache
       sheetDataCache = data;
       sheetDataTimestamp = Date.now();
-      
-      // Save to file for persistence
       fs.writeFileSync("sheetData.json", JSON.stringify(data, null, 2));
       res.json(data);
     } else {
@@ -442,13 +392,10 @@ app.get("/api/sheetData", async (req, res) => {
     }
   } catch (err) {
     console.error("Error fetching sheet data:", err);
-    
-    // Fallback to cached data if available
     if (sheetDataCache) {
       console.log("Falling back to cached sheet data");
       return res.json(sheetDataCache);
     }
-    
     res.status(500).json({ error: "Failed to fetch sheet data" });
   }
 });
@@ -457,17 +404,14 @@ app.use(unknownEndpoint);
 app.use(errorHandler);
 
 /*Server Setup*/
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3001;
 
-// Start server only after preloading data
 const startServer = async () => {
   try {
-    // First preload the data
     await preloadVideoData();
     await preloadSheetData();
     await preloadRolesData();
-    
-    // Then start the server
+
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });

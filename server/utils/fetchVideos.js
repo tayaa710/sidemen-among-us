@@ -1,6 +1,6 @@
-const axios = require("axios");
-const fs = require("fs");
-const { fetchSingleSheet } = require("./fetchSheetData");
+import axios from "axios";
+import fs from "fs";
+import { fetchSingleSheet } from "./fetchSheetData.js";
 
 const formatDuration = (isoDuration) => {
   const match = isoDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
@@ -18,12 +18,11 @@ const formatDuration = (isoDuration) => {
 
 const playlistID = "PLhjLcvbbPVrVOY5w5Pl7KuSe5fGroQJJD";
 
-const fetchVideos = async (apiKey) => {
+export const fetchVideos = async (apiKey) => {
   let nextPageToken = "";
   let videoData = [];
 
-  const sheet = await fetchSingleSheet(1053703173,0)
-  
+  const sheet = await fetchSingleSheet(1053703173, 0);
 
   try {
     do {
@@ -32,7 +31,7 @@ const fetchVideos = async (apiKey) => {
         {
           params: {
             part: "snippet",
-            maxResults: 50, 
+            maxResults: 50,
             playlistId: playlistID,
             key: apiKey,
             pageToken: nextPageToken,
@@ -86,16 +85,15 @@ const fetchVideos = async (apiKey) => {
     const sheetEntries = Array.isArray(sheet) ? sheet : (sheet.data || []);
     videoData = videoData.map(video => {
       const matchingSheetEntries = sheetEntries.filter(entry => entry.videolink.includes(video.id));
-      // console.log(matchingSheetEntries)
       let players = [];
       let roles = [];
       let mapNames = [];
       matchingSheetEntries.forEach(game => {
-        
+
         if (game["mapname"]) {
           mapNames.push(game["mapname"]);
         }
-        
+
         const rolesStr = game["players,rolesandtasks"];
         if (rolesStr) {
           rolesStr.split('\n').forEach(line => {
@@ -110,26 +108,15 @@ const fetchVideos = async (apiKey) => {
           });
         }
       });
-      players = [...new Set(players)]; // remove duplicates
-      roles = [...new Set(roles)]; // remove duplicates
-      mapNames = [...new Set(mapNames)]; // remove duplicates
-      console.log(mapNames)
-      
+      players = [...new Set(players)];
+      roles = [...new Set(roles)];
+      mapNames = [...new Set(mapNames)];
+
       return { ...video, players, roles, mapNames };
     });
 
-    fs.writeFileSync(
-      'videoData1.txt',
-      videoData.map(video =>
-        `${video.title}\n${video.videoUrl}\nViews: ${video.viewCount} | Likes: ${video.likeCount} | Duration: ${video.duration} | Published: ${video.publishedAt}\n`
-      ).join('\n---\n'),
-      'utf-8'
-    );
-    console.log('Video data saved to videoData.txt');
     return videoData;
   } catch (error) {
     console.error("Error fetching videos:", error);
   }
 };
-
-module.exports = { fetchVideos };
