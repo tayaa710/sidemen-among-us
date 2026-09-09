@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "./filterBar.css";
 import FilterInOut from "./filterInOut/FilterInOut";
 
 const FilterBar = ({
   setSorter,
   setSearchQuery,
-  playerStats,
   playerCheckboxes,
   setPlayerCheckboxes,
-  gameStats,
   roleCheckboxes,
   setRoleCheckboxes,
   mapCheckboxes,

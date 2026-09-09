@@ -75,14 +75,16 @@ const Players = ({ playerStats, roleDescriptions }) => {
       switch (sortOption) {
         case "wins":
           return b.wins - a.wins;
-        case "winRate":
+        case "winRate": {
           const aWinRate = a.wins / (a.wins + a.losses) || 0;
           const bWinRate = b.wins / (b.wins + b.losses) || 0;
           return bWinRate - aWinRate;
-        case "kdr":
+        }
+        case "kdr": {
           const aKdr = a.kdr || (a.kills / a.deaths) || 0;
           const bKdr = b.kdr || (b.kills / b.deaths) || 0;
           return bKdr - aKdr;
+        }
         case "gamesPlayed":
           return b.gamesplayed - a.gamesplayed;
         case "alphabetical":

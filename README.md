@@ -1,6 +1,6 @@
-<!-- Screenshot: run the client (see Getting started), capture the video grid with the filters open, save it as docs/screenshot.png and uncomment:
-<p align="center"><img src="docs/screenshot.png" width="820" alt="Sidemen Among Us fan archive"></p>
--->
+<p align="center">
+  <img src="docs/screenshot.png" width="820" alt="Sidemen Among Us fan archive: the video grid with sort, search, player and role panels">
+</p>
 
 # Sidemen Among Us — Fan Archive
 
@@ -51,7 +51,7 @@ The role fetchers are the interesting part: one clones the *All The Roles* wiki 
 
 ## Getting started
 
-You need Node.js 20+ (18 will also work). A YouTube API key is optional: the repository ships with a snapshot of the video data so the server runs without one.
+You need Node.js 20 or newer (last verified on Node 26). A YouTube API key is optional: the repository ships with a snapshot of the video data, so the server runs without one.
 
 ```bash
 git clone https://github.com/tayaa710/sidemen-among-us.git

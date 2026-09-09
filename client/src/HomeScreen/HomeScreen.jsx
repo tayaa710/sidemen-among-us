@@ -174,7 +174,7 @@ const HomeScreen = () => {
         
         // Create mode checkboxes sorted by the number of videos (most first)
         const modeOptions = Object.entries(modeCounts)
-          .filter(([_, count]) => count > 0) // Only include modes that appear in videos
+          .filter(([, count]) => count > 0) // Only include modes that appear in videos
           .sort((a, b) => b[1] - a[1]) // Sort by count (descending)
           .map(([modename, count]) => ({
             modename,
